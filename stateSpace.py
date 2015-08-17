@@ -170,7 +170,7 @@ def state_space(grid, neuron_multiply, verbose=True):
     amin = 0
     amax = 100
     sigmamin = 0. * ms
-    sigmamax = 5. * ms
+    sigmamax = 4. * ms
 
     params = default_params()
     params.num_layers = 1
