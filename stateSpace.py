@@ -25,10 +25,10 @@ def minimal_example():
 #    P = NeuronGroup(N=1000, model=(dV,dx,dy),init=(0*volt,0*volt,0*volt),
 #                  threshold=Vt,reset=Vr,refractory=1*ms)
 
-    Pinput = PulsePacket(t=50 * ms, n=85, sigma=1 * ms)
+    Pinput = PulsePacket(t=10 * ms, n=85, sigma=1 * ms)
     # The network structure
     Pgp = [ P.subgroup(100) for i in range(20)]
-    C = Connection(P, P, 'y')
+    C = Connection(P, P, 'y',delay=5*ms)
     for i in range(19):
         C.connect_full(Pgp[i], Pgp[i + 1], weight)
     Cinput = Connection(Pinput, P, 'y')
@@ -41,7 +41,7 @@ def minimal_example():
     P.V = Vr + rand(len(P)) * (Vt - Vr)
     run(90 * ms)
     # Plot result
-    raster_plot(showgrouplines=False, *monitors)
+    raster_plot(showgrouplines=True, *monitors)
     show()
 
 
@@ -88,7 +88,7 @@ default_params = Parameters(
     neurons_per_layer=100,
     neurons_in_input_layer=100,
     # Initiating burst parameters
-    initial_burst_t=50 * ms,
+    initial_burst_t=10 * ms,
     initial_burst_a=85,
     initial_burst_sigma=1 * ms,
     # these values are recomputed whenever another value changes
