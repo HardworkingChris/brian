@@ -88,7 +88,7 @@ default_params = Parameters(
     neurons_per_layer=100,
     neurons_in_input_layer=100,
     # Initiating burst parameters
-    initial_burst_t=10 * ms,
+    initial_burst_t=50 * ms,
     initial_burst_a=85,
     initial_burst_sigma=1 * ms,
     # these values are recomputed whenever another value changes
@@ -211,6 +211,40 @@ def state_space(grid, neuron_multiply, verbose=True):
     title('Synfire chain state space')
     axis([sigmamin / ms, sigmamax / ms, amin, amax])
 
+def sigma_vs_a(neuron_multiply = 1, verbose=True):
+    amin = 0
+    amax = 100
+    sigmamin = 0
+    sigmamax = 5
+    
+    npts = 50
+    step = 100/int(npts)
+    
+    params = default_params()
+    params.num_layers = 1
+    params.neurons_per_layer = params.neurons_per_layer * neuron_multiply
+
+    net = DefaultNetwork(params)
+    if verbose:
+        print "Spike probability is being calculated for input volleys of varying neuronal number and dipersion:"
+    start_time = time.time()
+    figure()
+    for sigmai in range(sigmamax+1):
+        alpha = []
+        for ai in xrange(0,amax + step,step): #
+            params.initial_burst_a, params.initial_burst_sigma = ai, sigmai * ms
+            net.reinit(params)
+            net.run()
+            (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
+            newa = float(newa) / float(neuron_multiply)
+            alpha.append(newa/float(amax))
+        plot(xrange(0,amax + step,step),alpha)
+    if verbose:
+        print "Evaluation time:", time.time() - start_time, "seconds"
+    xlabel('a (neurons)')
+    ylabel('alpha (probability)')
+    title('spike probability vs input spike number and sigma')
+    axis([amin,amax,0,1])
 
 #minimal_example()
 #print 'Computing SFC with multiple layers'
@@ -219,5 +253,6 @@ print 'Plotting SFC state space'
 #state_space(5,1)
 #state_space(8,10)
 #state_space(10,50)
-state_space(10,100)
+#state_space(10,100)
+sigma_vs_a(1)
 show()
