@@ -15,7 +15,12 @@ dy/dt=-y*(1./taupsp)+25.27*mV/ms+\
 # Neuron groups.  Modified to be larger TMM
 P = NeuronGroup(N=1000, model=eqs,
     threshold=Vt, reset=Vr, refractory=1 * ms)
-Pinput = PulsePacket(t=10 * ms, n=55, sigma=0 * ms)
+# Input spike volley's a and sigma from user
+print "\nInput no.of neurons 'a' and temporal dispersion of spikes 'sigma'"
+user_n = int(raw_input("\na = "))
+user_sigma = float(raw_input("sigma(in mSec) = "))
+print "\n"
+Pinput = PulsePacket(t=10 * ms, n=user_n, sigma=user_sigma * ms)
 # The network structure.  Modified to be larger TMM
 Pgp = [ P.subgroup(100) for i in range(10)]
 C = Connection(P, P, 'y',delay=5*ms)
@@ -30,7 +35,22 @@ Minput = SpikeMonitor(Pinput)
 monitors = [Minput] + Mgp
 # Setup the network, and run it
 P.V = Vr + rand(len(P)) * (Vt - Vr)
-run(90 * ms)
+# Plot voltage trace
+trace = StateMonitor(P,'V',record=[1,101,201,301,401,501,601,701,801,901]) 
+
+run(90 * ms) # trace records the state variable change along the run
+
+plot(trace.times/ms,trace[1]/mV)
+plot(trace.times/ms,trace[101]/mV)
+plot(trace.times/ms,trace[201]/mV)
+plot(trace.times/ms,trace[301]/mV)
+plot(trace.times/ms,trace[401]/mV)
+plot(trace.times/ms,trace[501]/mV)
+plot(trace.times/ms,trace[601]/mV)
+plot(trace.times/ms,trace[701]/mV)
+plot(trace.times/ms,trace[801]/mV)
+plot(trace.times/ms,trace[901]/mV)
+show()
 # Plot result
 raster_plot(showgrouplines=True, *monitors)
 show()
