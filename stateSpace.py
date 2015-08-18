@@ -211,7 +211,7 @@ def state_space(grid, neuron_multiply, verbose=True):
     title('Synfire chain state space')
     axis([sigmamin / ms, sigmamax / ms, amin, amax])
 
-def sigma_vs_a(neuron_multiply = 1, verbose=True):
+def probability_vs_a(neuron_multiply = 1, verbose=True):
     amin = 0
     amax = 100
     sigmamin = 0
@@ -246,13 +246,49 @@ def sigma_vs_a(neuron_multiply = 1, verbose=True):
     title('spike probability vs input spike number and sigma')
     axis([amin,amax,0,1])
 
+def newsigma_vs_sigmain(neuron_multiply = 1, verbose=True):
+    amin = 0
+    amax = 100
+    sigmamin = 0
+    sigmamax = 5
+    
+    npts = 5
+    
+    params = default_params()
+    params.num_layers = 1
+    params.neurons_per_layer = params.neurons_per_layer * neuron_multiply
+
+    net = DefaultNetwork(params)
+    if verbose:
+        print "\nSynchrony is being calculated for input volleys of varying neuronal number and dipersion:"
+    start_time = time.time()
+    figure()
+    for ai in [45,65,100]:
+        sigmaOut = []
+        for sigmai in linspace(sigmamin,sigmamax,npts): #
+            params.initial_burst_a, params.initial_burst_sigma = ai, sigmai * ms
+            net.reinit(params)
+            net.run()
+            (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
+            sigmaOut.append(newsigma)
+        plot(linspace(sigmamin,sigmamax,npts),sigmaOut)
+    if verbose:
+        print "Evaluation time:", time.time() - start_time, "seconds"
+    xlabel('sigma in (in ms)')
+    ylabel('sigma out (in s)')
+    title('synchrony vs input spike number and sigma')
+    axis([sigmamin,sigmamax,sigmamin * ms,sigmamax * ms])
+
 #minimal_example()
 #print 'Computing SFC with multiple layers'
 #single_sfc()
-print 'Plotting SFC state space'
+#print 'Plotting SFC state space'
 #state_space(5,1)
 #state_space(8,10)
 #state_space(10,50)
 #state_space(10,100)
-sigma_vs_a(1)
+
+#probability_vs_a(1)
+newsigma_vs_sigmain(1)
+
 show()
