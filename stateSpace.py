@@ -316,22 +316,23 @@ def aout_vs_ain(neuron_multiply = 1, verbose=True):
     ylabel('a_out (spikes)')
     title('a_out vs input spike number a_in and sigma')
     axis([amin,amax,amin,amax])
-
-#minimal_example()
+    
+##--------------------------------------------
+## Uncomment below functions to generate state space
+##--------------------------------------------
 #print 'Computing SFC with multiple layers'
-#single_sfc()
 #print 'Plotting SFC state space'
 #state_space(10,1)
 #state_space(8,10)
-#state_space(10,50)
 #state_space(10,100)
-state_space(10,50)
-#state_space(10,0.9)
-#state_space(10,1.1)
-#state_space(10,1.5)
+#state_space(10,50)
+#show()
 
-##Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c and 4d
+
+##--------------------------------------------
+## Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c/3c and 4d
+##--------------------------------------------
 #probability_vs_a(1)
 #newsigma_vs_sigmain(1)
 #aout_vs_ain(1)
-show()
+#show()
