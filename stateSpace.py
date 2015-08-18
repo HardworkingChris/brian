@@ -85,7 +85,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=100,
+    neurons_per_layer=80, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -174,7 +174,7 @@ def state_space(grid, neuron_multiply, verbose=True):
 
     params = default_params()
     params.num_layers = 1
-    params.neurons_per_layer = params.neurons_per_layer * neuron_multiply
+    params.neurons_per_layer = int(params.neurons_per_layer * neuron_multiply)
 
     net = DefaultNetwork(params)
 
@@ -212,6 +212,7 @@ def state_space(grid, neuron_multiply, verbose=True):
     axis([sigmamin / ms, sigmamax / ms, amin, amax])
 
 def probability_vs_a(neuron_multiply = 1, verbose=True):
+    '''Generates figure 2C'''
     amin = 0
     amax = 100
     sigmamin = 0
@@ -247,6 +248,7 @@ def probability_vs_a(neuron_multiply = 1, verbose=True):
     axis([amin,amax,0,1])
 
 def newsigma_vs_sigmain(neuron_multiply = 1, verbose=True):
+    '''Generates figure 2d'''
     amin = 0
     amax = 100
     sigmamin = 0
@@ -279,16 +281,57 @@ def newsigma_vs_sigmain(neuron_multiply = 1, verbose=True):
     title('synchrony vs input spike number and sigma')
     axis([sigmamin,sigmamax,sigmamin * ms,sigmamax * ms])
 
+def aout_vs_ain(neuron_multiply = 1, verbose=True):
+    '''Generates figure 4a'''
+    amin = 0
+    amax = 100
+    sigmamin = 0
+    sigmamax = 5
+    
+    npts = 10
+    step = 100/int(npts)
+    
+    params = default_params()
+    params.num_layers = 1
+    params.neurons_per_layer = params.neurons_per_layer * neuron_multiply
+
+    net = DefaultNetwork(params)
+    if verbose:
+        print "Final spike number is being calculated for input volleys of varying neuronal number and dipersion:"
+    start_time = time.time()
+    figure()
+    for sigmai in range(sigmamax+1):
+        aout = []
+        for ai in xrange(0,amax + step,step): #
+            params.initial_burst_a, params.initial_burst_sigma = ai, sigmai * ms
+            net.reinit(params)
+            net.run()
+            (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
+            newa = float(newa) / float(neuron_multiply)
+            aout.append(newa)
+        plot(xrange(0,amax + step,step),aout)
+    if verbose:
+        print "Evaluation time:", time.time() - start_time, "seconds"
+    xlabel('a_in (spikes)')
+    ylabel('a_out (spikes)')
+    title('a_out vs input spike number a_in and sigma')
+    axis([amin,amax,amin,amax])
+
 #minimal_example()
 #print 'Computing SFC with multiple layers'
 #single_sfc()
 #print 'Plotting SFC state space'
-#state_space(5,1)
+#state_space(10,1)
 #state_space(8,10)
 #state_space(10,50)
 #state_space(10,100)
+state_space(10,50)
+#state_space(10,0.9)
+#state_space(10,1.1)
+#state_space(10,1.5)
 
+##Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c and 4d
 #probability_vs_a(1)
-newsigma_vs_sigmain(1)
-
+#newsigma_vs_sigmain(1)
+#aout_vs_ain(1)
 show()
