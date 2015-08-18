@@ -85,7 +85,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=80, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=100, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -209,7 +209,7 @@ def state_space(grid, neuron_multiply, verbose=True):
     xlabel('sigma (ms)')
     ylabel('a')
     title('Synfire chain state space')
-    axis([sigmamin / ms, sigmamax / ms, amin, amax])
+    axis([sigmamin / ms, sigmamax / ms, 0, 120])
 
 def probability_vs_a(neuron_multiply = 1, verbose=True):
     '''Generates figure 2C'''
