@@ -85,7 +85,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=100, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=80, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -351,25 +351,28 @@ def isoclines(grid, neuron_multiply, verbose=True):
             net.run()
             (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
-            if (newa-a >= 0): 
-                aouta.append(a)
-                aouts.append(sigma / ms)
-            #print a,get_dimensions(newsigma),newsigma*1000,get_dimensions(sigma),sigma,"\n"
-            if (newsigma*1000 - sigma / ms) < 0.01:
-                souta.append(a)
-                souts.append(sigma / ms)
+       
             #if abs(newsigma - sigma)<dsigma : sigmaout.append([newa,newsigma])
             #col = (float(ai) / float(grid), float(sigmai) / float(grid), 0.5)
             #plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
             plot([sigma / ms], [a], marker='.', color=[0,0,0], markersize=15)
+            if (newa-a >= 0): 
+                aouta.append(a)
+                aouts.append(sigma / ms)  
+                plot([sigma / ms], [a], marker='.', color='b', markersize=15) 
+            if (newsigma*1000 - sigma / ms) < 0.01:
+                souta.append(a)
+                souts.append(sigma / ms)
+                plot([sigma / ms], [a], marker='.', color='r', markersize=15) 
+                         
             i += 1
             if verbose:
                 print str(int(100. * float(i) / float((grid + 1) ** 2))) + "%",
         if verbose:
             print
                     
-    plot(aouts,aouta,'b-')
-    plot(souts,souta,'r-')
+    #plot(aouts,aouta,'b-')
+    #plot(souts,souta,'r-')
     if verbose:
         print "Evaluation time:", time.time() - start_time, "seconds"
     xlabel('sigma (ms)')
