@@ -316,6 +316,57 @@ def aout_vs_ain(neuron_multiply = 1, verbose=True):
     ylabel('a_out (spikes)')
     title('a_out vs input spike number a_in and sigma')
     axis([amin,amax,amin,amax])
+
+def isoclines(grid, neuron_multiply, verbose=True):
+    amin = 0
+    amax = 100
+    sigmamin = 0. * ms
+    sigmamax = 4. * ms
+    dsigma = 1. * ms
+    params = default_params()
+    params.num_layers = 1
+    params.neurons_per_layer = int(params.neurons_per_layer * neuron_multiply)
+
+    net = DefaultNetwork(params)
+
+    i = 0
+    
+    if verbose:
+        print "Completed:"
+    start_time = time.time()
+    figure()
+    
+    aout = []
+    sigmaout = []    
+    
+    for ai in range(grid + 1):
+        for sigmai in range(grid + 1): #
+            a = int(amin + (ai * (amax - amin)) / grid)
+            if a > amax: a = amax
+            sigma = sigmamin + sigmai * (sigmamax - sigmamin) / grid
+            params.initial_burst_a, params.initial_burst_sigma = a, sigma
+            net.reinit(params)
+            net.run()
+            (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
+            newa = float(newa) / float(neuron_multiply)
+            if abs(newa-a)<50 : aout.append([newa,newsigma])
+            #if abs(newsigma - sigma)<dsigma : sigmaout.append([newa,newsigma])
+            #col = (float(ai) / float(grid), float(sigmai) / float(grid), 0.5)
+            #plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
+            plot([sigma / ms], [a], marker='.', color=[0,0,0], markersize=15)
+            i += 1
+            if verbose:
+                print str(int(100. * float(i) / float((grid + 1) ** 2))) + "%",
+        if verbose:
+            print
+    plot(aout[1],aout[0],'b-')
+    #plot(sigmaout[1],sigmaout[0],'r.')
+    if verbose:
+        print "Evaluation time:", time.time() - start_time, "seconds"
+    xlabel('sigma (ms)')
+    ylabel('a')
+    title('Isoclines')
+    axis([sigmamin / ms, sigmamax / ms, 0, 120])
     
 ##--------------------------------------------
 ## Uncomment below functions to generate state space
@@ -326,7 +377,8 @@ def aout_vs_ain(neuron_multiply = 1, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-#show()
+isoclines(10,1)
+show()
 
 
 ##--------------------------------------------
