@@ -338,7 +338,8 @@ def isoclines(grid, neuron_multiply, verbose=True):
     
     aouta = []
     aouts = []
-    sigmaout = []    
+    souta = []
+    souts = []   
     
     for ai in range(grid + 1):
         for sigmai in range(grid + 1): #
@@ -350,9 +351,13 @@ def isoclines(grid, neuron_multiply, verbose=True):
             net.run()
             (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
-            if abs(newa-a)==0: 
-                aouta.append(newa)
-                aouts.append(newsigma)
+            if newa-a == 0: 
+                aouta.append(a)
+                aouts.append(sigma / ms)
+            print get_dimensions(newsigma *ms),newsigma * 1000,get_dimensions(sigma),sigma,"\n"
+            if not((newsigma * ms) / ms - sigma):
+                souta.append(a)
+                souts.append(sigma / ms)
             #if abs(newsigma - sigma)<dsigma : sigmaout.append([newa,newsigma])
             #col = (float(ai) / float(grid), float(sigmai) / float(grid), 0.5)
             #plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
@@ -362,9 +367,9 @@ def isoclines(grid, neuron_multiply, verbose=True):
                 print str(int(100. * float(i) / float((grid + 1) ** 2))) + "%",
         if verbose:
             print
-    #aout[1] = array(aout[1])        
-    plot(aouts / ms,aouta,'b-')
-    #plot(sigmaout[1],sigmaout[0],'r.')
+                    
+    plot(aouts,aouta,'b-')
+    plot(souts,souta,'r-')
     if verbose:
         print "Evaluation time:", time.time() - start_time, "seconds"
     xlabel('sigma (ms)')
@@ -381,7 +386,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-isoclines(15,1)
+isoclines(10,1)
 show()
 
 
