@@ -336,7 +336,8 @@ def isoclines(grid, neuron_multiply, verbose=True):
     start_time = time.time()
     figure()
     
-    aout = []
+    aouta = []
+    aouts = []
     sigmaout = []    
     
     for ai in range(grid + 1):
@@ -349,7 +350,9 @@ def isoclines(grid, neuron_multiply, verbose=True):
             net.run()
             (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
-            if abs(newa-a)<50 : aout.append([newa,newsigma])
+            if abs(newa-a)==0: 
+                aouta.append(newa)
+                aouts.append(newsigma)
             #if abs(newsigma - sigma)<dsigma : sigmaout.append([newa,newsigma])
             #col = (float(ai) / float(grid), float(sigmai) / float(grid), 0.5)
             #plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
@@ -359,14 +362,15 @@ def isoclines(grid, neuron_multiply, verbose=True):
                 print str(int(100. * float(i) / float((grid + 1) ** 2))) + "%",
         if verbose:
             print
-    plot(aout[1],aout[0],'b-')
+    #aout[1] = array(aout[1])        
+    plot(aouts / ms,aouta,'b-')
     #plot(sigmaout[1],sigmaout[0],'r.')
     if verbose:
         print "Evaluation time:", time.time() - start_time, "seconds"
     xlabel('sigma (ms)')
     ylabel('a')
     title('Isoclines')
-    axis([sigmamin / ms, sigmamax / ms, 0, 120])
+    #axis([sigmamin / ms, sigmamax / ms, 0, 120])
     
 ##--------------------------------------------
 ## Uncomment below functions to generate state space
@@ -377,7 +381,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-isoclines(10,1)
+isoclines(15,1)
 show()
 
 
