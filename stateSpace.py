@@ -351,11 +351,11 @@ def isoclines(grid, neuron_multiply, verbose=True):
             net.run()
             (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
-            if newa-a == 0: 
+            if newa-a < 2: 
                 aouta.append(a)
                 aouts.append(sigma / ms)
-            print get_dimensions(newsigma *ms),newsigma * 1000,get_dimensions(sigma),sigma,"\n"
-            if not((newsigma * ms) / ms - sigma):
+            #print a,get_dimensions(newsigma),newsigma*1000,get_dimensions(sigma),sigma,"\n"
+            if abs(newsigma*1000 - sigma / ms) < 0.05:
                 souta.append(a)
                 souts.append(sigma / ms)
             #if abs(newsigma - sigma)<dsigma : sigmaout.append([newa,newsigma])
@@ -386,7 +386,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-isoclines(10,1)
+isoclines(10,1,False)
 show()
 
 
