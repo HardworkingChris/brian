@@ -85,7 +85,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=80, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=110, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -339,7 +339,10 @@ def isoclines(grid, neuron_multiply, verbose=True):
     aouta = []
     aouts = []
     souta = []
-    souts = []   
+    souts = []
+    inta = []
+    ints = []
+       
     newsigma = 0. * ms
     for ai in range(grid + 1):
         for sigmai in range(grid + 1): #
@@ -352,9 +355,8 @@ def isoclines(grid, neuron_multiply, verbose=True):
             (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
        
-            #if abs(newsigma - sigma)<dsigma : sigmaout.append([newa,newsigma])
             #col = (float(ai) / float(grid), float(sigmai) / float(grid), 0.5)
-            #plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
+            plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
             plot([sigma / ms], [a], marker='.', color=[0,0,0], markersize=15)
             if (newa-a >= 0): 
                 aouta.append(a)
@@ -364,7 +366,10 @@ def isoclines(grid, neuron_multiply, verbose=True):
                 souta.append(a)
                 souts.append(sigma / ms)
                 plot([sigma / ms], [a], marker='.', color='r', markersize=15) 
-                         
+            if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
+                inta.append(a)
+                ints.append(sigma / ms)
+                plot([sigma / ms], [a], marker='.', color='g', markersize=15)                        
             i += 1
             if verbose:
                 print str(int(100. * float(i) / float((grid + 1) ** 2))) + "%",
@@ -378,7 +383,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
     xlabel('sigma (ms)')
     ylabel('a')
     title('Isoclines')
-    #axis([sigmamin / ms, sigmamax / ms, 0, 120])
+    axis([sigmamin / ms, sigmamax / ms, 0, 120])
     
 ##--------------------------------------------
 ## Uncomment below functions to generate state space
