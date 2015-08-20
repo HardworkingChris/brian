@@ -1,3 +1,7 @@
+"""
+The network is modified to have intragroup connections
+"""
+
 #import brian_no_units
 from brian import *
 import time
@@ -12,6 +16,7 @@ def minimal_example():
     taum = 10 * ms
     taupsp = 0.325 * ms
     weight = 4.86 * mV
+    weight_ig = 2.43 * mV
     # Neuron model
     equations = Equations('''
         dV/dt = (-(V-Vr)+x)*(1./taum)                            : volt
@@ -27,10 +32,11 @@ def minimal_example():
 
     Pinput = PulsePacket(t=10 * ms, n=85, sigma=1 * ms)
     # The network structure
-    Pgp = [ P.subgroup(100) for i in range(20)]
+    Pgp = [ P.subgroup(100) for i in range(10)]
     C = Connection(P, P, 'y',delay=5*ms)
-    for i in range(19):
+    for i in range(9):
         C.connect_full(Pgp[i], Pgp[i + 1], weight)
+        C.connect_full(Pgp[i], Pgp[i], weight_ig) #Intra-group connections
     Cinput = Connection(Pinput, P, 'y')
     Cinput.connect_full(Pinput, Pgp[0], weight)
     # Record the spikes
@@ -85,7 +91,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=88, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=80, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -111,6 +117,7 @@ class DefaultNetwork(Network):
         chainconnect = Connection(chaingroup, chaingroup, 2,delay=5*ms)
         for i in range(p.num_layers - 1):
             chainconnect.connect_full(layer[i], layer[i + 1], p.psp_peak * p.we)
+            chainconnect.connect_full(layer[i], layer[i], p.psp_peak * p.we) #Ig connections made
         inputconnect = Connection(inputgroup, chaingroup, 2)
         inputconnect.connect_full(inputgroup, layer[0], p.psp_peak * p.we)
         # monitors
@@ -394,7 +401,9 @@ def isoclines(grid, neuron_multiply, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-isoclines(10,50,False)
+#isoclines(10,50)
+
+minimal_example()
 show()
 
 

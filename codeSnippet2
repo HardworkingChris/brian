@@ -1,0 +1,194 @@
+def probability_vs_a(neuron_multiply = 1, verbose=True):
+    '''Generates figure 2C'''
+    amin = 0
+    amax = 100
+    sigmamin = 0
+    sigmamax = 5
+    
+    npts = 50
+    step = 100/int(npts)
+    
+    params = default_params()
+    params.num_layers = 1
+    params.neurons_per_layer = params.neurons_per_layer * neuron_multiply
+
+    net = DefaultNetwork(params)
+    if verbose:
+        print "Spike probability is being calculated for input volleys of varying neuronal number and dipersion:"
+    start_time = time.time()
+    figure()
+    for sigmai in range(sigmamax+1):
+        alpha = []
+        for ai in xrange(0,amax + step,step): #
+            params.initial_burst_a, params.initial_burst_sigma = ai, sigmai * ms
+            net.reinit(params)
+            net.run()
+            (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
+            newa = float(newa) / float(neuron_multiply)
+            alpha.append(newa/float(amax))
+        plot(xrange(0,amax + step,step),alpha)
+    if verbose:
+        print "Evaluation time:", time.time() - start_time, "seconds"
+    xlabel('a (neurons)')
+    ylabel('alpha (probability)')
+    title('spike probability vs input spike number and sigma')
+    axis([amin,amax,0,1])
+
+def newsigma_vs_sigmain(neuron_multiply = 1, verbose=True):
+    '''Generates figure 2d'''
+    amin = 0
+    amax = 100
+    sigmamin = 0
+    sigmamax = 5
+    
+    npts = 5
+    
+    params = default_params()
+    params.num_layers = 1
+    params.neurons_per_layer = params.neurons_per_layer * neuron_multiply
+
+    net = DefaultNetwork(params)
+    if verbose:
+        print "\nSynchrony is being calculated for input volleys of varying neuronal number and dipersion:"
+    start_time = time.time()
+    figure()
+    for ai in [45,65,100]:
+        sigmaOut = []
+        for sigmai in linspace(sigmamin,sigmamax,npts): #
+            params.initial_burst_a, params.initial_burst_sigma = ai, sigmai * ms
+            net.reinit(params)
+            net.run()
+            (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
+            sigmaOut.append(newsigma)
+        plot(linspace(sigmamin,sigmamax,npts),sigmaOut)
+    if verbose:
+        print "Evaluation time:", time.time() - start_time, "seconds"
+    xlabel('sigma in (in ms)')
+    ylabel('sigma out (in s)')
+    title('synchrony vs input spike number and sigma')
+    axis([sigmamin,sigmamax,sigmamin * ms,sigmamax * ms])
+
+def aout_vs_ain(neuron_multiply = 1, verbose=True):
+    '''Generates figure 4a'''
+    amin = 0
+    amax = 100
+    sigmamin = 0
+    sigmamax = 5
+    
+    npts = 10
+    step = 100/int(npts)
+    
+    params = default_params()
+    params.num_layers = 1
+    params.neurons_per_layer = params.neurons_per_layer * neuron_multiply
+
+    net = DefaultNetwork(params)
+    if verbose:
+        print "Final spike number is being calculated for input volleys of varying neuronal number and dipersion:"
+    start_time = time.time()
+    figure()
+    for sigmai in range(sigmamax+1):
+        aout = []
+        for ai in xrange(0,amax + step,step): #
+            params.initial_burst_a, params.initial_burst_sigma = ai, sigmai * ms
+            net.reinit(params)
+            net.run()
+            (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
+            newa = float(newa) / float(neuron_multiply)
+            aout.append(newa)
+        plot(xrange(0,amax + step,step),aout)
+    if verbose:
+        print "Evaluation time:", time.time() - start_time, "seconds"
+    xlabel('a_in (spikes)')
+    ylabel('a_out (spikes)')
+    title('a_out vs input spike number a_in and sigma')
+    axis([amin,amax,amin,amax])
+
+def isoclines(grid, neuron_multiply, verbose=True):
+    amin = 0
+    amax = 100
+    sigmamin = 0. * ms
+    sigmamax = 4. * ms
+    dsigma = 1. * ms
+    params = default_params()
+    params.num_layers = 1
+    params.neurons_per_layer = int(params.neurons_per_layer * neuron_multiply)
+
+    net = DefaultNetwork(params)
+
+    i = 0
+    
+    if verbose:
+        print "Completed:"
+    start_time = time.time()
+    figure()
+    
+    aouta = []
+    aouts = []
+    souta = []
+    souts = []
+    inta = []
+    ints = []
+       
+    newsigma = 0. * ms
+    for ai in range(grid + 1):
+        for sigmai in range(grid + 1): #
+            a = int(amin + (ai * (amax - amin)) / grid)
+            if a > amax: a = amax
+            sigma = sigmamin + sigmai * (sigmamax - sigmamin) / grid
+            params.initial_burst_a, params.initial_burst_sigma = a, sigma
+            net.reinit(params)
+            net.run()
+            (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
+            newa = float(newa) / float(neuron_multiply)
+       
+            #col = (float(ai) / float(grid), float(sigmai) / float(grid), 0.5)
+            plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
+            plot([sigma / ms], [a], marker='.', color=[0,0,0], markersize=15)
+            if (newa-a >= 0): 
+                aouta.append(a)
+                aouts.append(sigma / ms)  
+                plot([sigma / ms], [a], marker='.', color='b', markersize=15) 
+            if (newsigma*1000 - sigma / ms) < 0.01:
+                souta.append(a)
+                souts.append(sigma / ms)
+                plot([sigma / ms], [a], marker='.', color='r', markersize=15) 
+            if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
+                inta.append(a)
+                ints.append(sigma / ms)
+                plot([sigma / ms], [a], marker='.', color='g', markersize=15)                        
+            i += 1
+            if verbose:
+                print str(int(100. * float(i) / float((grid + 1) ** 2))) + "%",
+        if verbose:
+            print
+                    
+    #plot(aouts,aouta,'b-')
+    #plot(souts,souta,'r-')
+    if verbose:
+        print "Evaluation time:", time.time() - start_time, "seconds"
+    xlabel('sigma (ms)')
+    ylabel('a')
+    title('Isoclines')
+    axis([sigmamin / ms, sigmamax / ms, 0, 120])
+    
+##--------------------------------------------
+## Uncomment below functions to generate state space
+##--------------------------------------------
+#print 'Computing SFC with multiple layers'
+#print 'Plotting SFC state space'
+#state_space(10,1)
+#state_space(8,10)
+#state_space(10,100)
+#state_space(10,50)
+isoclines(10,50,False)
+show()
+
+
+##--------------------------------------------
+## Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c/3c and 4d
+##--------------------------------------------
+#probability_vs_a(1)
+#newsigma_vs_sigmain(1)
+#aout_vs_ain(1)
+#show()
