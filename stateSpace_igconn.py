@@ -16,7 +16,7 @@ def minimal_example():
     taum = 10 * ms
     taupsp = 0.325 * ms
     weight = 4.86 * mV
-    weight_ig = 2.43 * mV
+    weight_ig = -4.86 * mV
     # Neuron model
     equations = Equations('''
         dV/dt = (-(V-Vr)+x)*(1./taum)                            : volt
