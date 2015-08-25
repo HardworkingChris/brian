@@ -92,7 +92,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=25, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=110, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -119,7 +119,7 @@ class DefaultNetwork(Network):
         for i in range(p.num_layers - 1):
             chainconnect.connect_full(layer[i], layer[i + 1], p.psp_peak * p.we)
         for i in range(p.num_layers):
-            chainconnect.connect_full(layer[i], layer[i], p.psp_peak * p.we) #Ig connections made
+            chainconnect.connect_full(layer[i], layer[i], p.psp_peak * p.wi) #Ig connections made
         inputconnect = Connection(inputgroup, chaingroup, 2)
         inputconnect.connect_full(inputgroup, layer[0], p.psp_peak * p.we)
         # monitors
@@ -403,9 +403,9 @@ def isoclines(grid, neuron_multiply, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-#isoclines(10,10)
+isoclines(10,50)
 
-minimal_example()
+#minimal_example()
 show()
 
 
