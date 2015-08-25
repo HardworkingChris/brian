@@ -30,12 +30,13 @@ def minimal_example():
 #    P = NeuronGroup(N=1000, model=(dV,dx,dy),init=(0*volt,0*volt,0*volt),
 #                  threshold=Vt,reset=Vr,refractory=1*ms)
 
-    Pinput = PulsePacket(t=10 * ms, n=85, sigma=1 * ms)
+    Pinput = PulsePacket(t=10 * ms, n=53, sigma=0 * ms)
     # The network structure
     Pgp = [ P.subgroup(100) for i in range(10)]
     C = Connection(P, P, 'y',delay=5*ms)
     for i in range(9):
         C.connect_full(Pgp[i], Pgp[i + 1], weight)
+    for i in range(10):
         C.connect_full(Pgp[i], Pgp[i], weight_ig) #Intra-group connections
     Cinput = Connection(Pinput, P, 'y')
     Cinput.connect_full(Pinput, Pgp[0], weight)
@@ -117,6 +118,7 @@ class DefaultNetwork(Network):
         chainconnect = Connection(chaingroup, chaingroup, 2,delay=5*ms)
         for i in range(p.num_layers - 1):
             chainconnect.connect_full(layer[i], layer[i + 1], p.psp_peak * p.we)
+        for i in range(p.num_layers):
             chainconnect.connect_full(layer[i], layer[i], p.psp_peak * p.we) #Ig connections made
         inputconnect = Connection(inputgroup, chaingroup, 2)
         inputconnect.connect_full(inputgroup, layer[0], p.psp_peak * p.we)
@@ -401,9 +403,9 @@ def isoclines(grid, neuron_multiply, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-#isoclines(10,50)
+isoclines(10,1)
 
-minimal_example()
+#minimal_example()
 show()
 
 
