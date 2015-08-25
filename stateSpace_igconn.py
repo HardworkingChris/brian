@@ -25,7 +25,7 @@ def minimal_example():
         ''')
 
     # Neuron groups
-    P = NeuronGroup(N=2000, model=equations,
+    P = NeuronGroup(N=1000, model=equations,
                   threshold=Vt, reset=Vr, refractory=1 * ms)
 #    P = NeuronGroup(N=1000, model=(dV,dx,dy),init=(0*volt,0*volt,0*volt),
 #                  threshold=Vt,reset=Vr,refractory=1*ms)
@@ -92,7 +92,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=80, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=25, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -403,9 +403,9 @@ def isoclines(grid, neuron_multiply, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-isoclines(10,1)
+#isoclines(10,10)
 
-#minimal_example()
+minimal_example()
 show()
 
 
