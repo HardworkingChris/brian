@@ -49,7 +49,7 @@ plot(trace.times/ms,trace[501]/mV)
 plot(trace.times/ms,trace[601]/mV)
 plot(trace.times/ms,trace[701]/mV)
 plot(trace.times/ms,trace[801]/mV)
-plot(trace.times/ms,trace[999]/mV)
+plot(trace.times/ms,trace[1000]/mV)
 show()
 # Plot result
 raster_plot(showgrouplines=True, *monitors)

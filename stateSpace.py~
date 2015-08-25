@@ -78,7 +78,7 @@ def Model(p):
     equations = Equations('''
         dV/dt = (-(V-p.Vr)+x)*(1./p.taum)                          : volt
         dx/dt = (-x+y)*(1./p.taupsp)                               : volt
-        dy/dt = -y*(1./p.taupsp)+25.27*mV/ms +(39.24*mV/ms**0.5)*xi: volt
+        dy/dt = -y*(1./p.taupsp)+25.27*mV/ms : volt
         ''')
         #+(39.24*mV/ms**0.5)*xi
     return Parameters(model=equations, threshold=p.Vt, reset=p.Vr, refractory=p.abs_refrac)

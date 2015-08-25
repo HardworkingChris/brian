@@ -1,0 +1,19 @@
+\documentclass{article}
+\title{Model equations}
+\author{Himanshu}
+\usepackage{amsmath}
+\begin{document}
+\maketitle
+\begin{equation}
+    \label{Voltage equation}
+    \frac{dV}{dt} = \frac{(-(V-Vr)+x)}{taum}
+\end{equation}
+\begin{equation}
+    \label{Conductance equation}
+    \frac{dx}{dt} = \frac{(-x+y)}{taupsp}
+\end{equation}
+\begin{equation}
+    \label{Synapse equation}
+    \frac{dy}{dt} = \frac{-y}{taupsp} + 25.27 + \sqrt{39.24}*nrand
+\end{equation}
+\end{document}

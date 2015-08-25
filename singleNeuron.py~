@@ -50,7 +50,7 @@ plot(trace_v.times/ms,trace_v[1]/mV)
 #plot(trace_v.times/ms,trace_v[201]/mV)
 #plot(trace_v.times/ms,trace_v[301]/mV)
 show()
-# Plot conductance trace
+# Plot voltage trace
 xlabel('time (in ms)')
 ylabel('g_syn (in mV)')
 title('Leaky integrate and fire neuron K conductance trace')
@@ -58,8 +58,7 @@ plot(trace_x.times/ms,trace_x[1]/mV)
 #plot(trace_x.times/ms,trace_x[201]/mV)
 #plot(trace_x.times/ms,trace_x[301]/mV)
 show()
-
-# Plot synapse trace
+# Plot voltage trace
 xlabel('time (in ms)')
 ylabel('g_syn (in mV)')
 title('Synaptic conductance trace')
@@ -67,14 +66,12 @@ plot(trace_y.times/ms,trace_y[1]/mV)
 #plot(trace_y.times/ms,trace_y[201]/mV)
 #plot(trace_y.times/ms,trace_y[301]/mV)
 show()
-
 # Plot voltage change due to synaptic current from 1 neuron
 xlabel('time (in ms)')
 ylabel('voltage (in mV)')
 title('Change in voltage due to one spike')
 plot(trace_v.times/ms,trace_v[1]/mV - trace_v[201]/mV)
 show()
-
 # Plot result
 raster_plot(showgrouplines=True, *monitors)
 show()
