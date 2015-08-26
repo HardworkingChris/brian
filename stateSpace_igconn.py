@@ -92,7 +92,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=110, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=90, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -403,7 +403,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-isoclines(10,50)
+isoclines(10,10)
 
 #minimal_example()
 show()
