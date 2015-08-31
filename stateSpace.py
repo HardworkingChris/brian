@@ -396,9 +396,10 @@ def isoclines(grid, neuron_multiply, verbose=True):
             except KeyError:
                 foo = 0
     '''
-    print max(ovrlp.keys()),',',ovrlp[max(ovrlp.keys())][0]
-    print min(ovrlp.keys()),',',ovrlp[min(ovrlp.keys())][-1]
-        
+    print "stable fixed point at ",max(ovrlp.keys()),',',ovrlp[max(ovrlp.keys())][0]
+    print "Saddle node at ",min(ovrlp.keys()),',',ovrlp[min(ovrlp.keys())][-1]
+    print "\n"
+       
 ##--------------------------------------------
 ## Uncomment below functions to generate state space
 ##--------------------------------------------
@@ -408,7 +409,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-isoclines(10,1)
+isoclines(10,50)
 show()
 
 
