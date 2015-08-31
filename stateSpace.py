@@ -368,8 +368,9 @@ def isoclines(grid, neuron_multiply, verbose=True):
                 souts.append(sigma / ms)
                 plot([sigma / ms], [a], marker='.', color='r', markersize=15) 
             if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
-                ovrlp_s.append(sigma)
-                ovrlp.update({a:ovrlp_s})
+                if a > 10:
+                    ovrlp_s.append(sigma)
+                    ovrlp.update({a:ovrlp_s})
                 plot([sigma / ms], [a], marker='.', color='g', markersize=15)                        
             i += 1
             if verbose:
@@ -386,16 +387,16 @@ def isoclines(grid, neuron_multiply, verbose=True):
     title('Isoclines')
     axis([sigmamin / ms, sigmamax / ms, 0, 120])
     print "\nThe points of intersection are:\n"
-    
+    '''
     foo = 1
-    
-    print max(ovrlp.keys()),',',ovrlp[max(ovrlp.keys())][0]
     while(foo):
-        if ovrlp[min(ovrlp.keys())] < 10:
+        if min(ovrlp.keys()) < 10:
             try:
                 del ovrlp[min(ovrlp.keys())]
             except KeyError:
-                foo = 1
+                foo = 0
+    '''
+    print max(ovrlp.keys()),',',ovrlp[max(ovrlp.keys())][0]
     print min(ovrlp.keys()),',',ovrlp[min(ovrlp.keys())][-1]
         
 ##--------------------------------------------
