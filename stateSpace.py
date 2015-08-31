@@ -386,10 +386,17 @@ def isoclines(grid, neuron_multiply, verbose=True):
     title('Isoclines')
     axis([sigmamin / ms, sigmamax / ms, 0, 120])
     print "\nThe points of intersection are:\n"
-    print ovrlp[max(ovrlp.keys())],',',ovrlp[max(ovrlp.keys())][0]
-    if ovrlp[min(ovrlp.keys())] < 10:
-        ovrlp.pop(min(ovrlp.keys()),'none')
-    print ovrlp[min(ovrlp.keys())],',',ovrlp[min(ovrlp.keys())][-1]
+    
+    foo = 1
+    
+    print max(ovrlp.keys()),',',ovrlp[max(ovrlp.keys())][0]
+    while(foo):
+        if ovrlp[min(ovrlp.keys())] < 10:
+            try:
+                del ovrlp[min(ovrlp.keys())]
+            except KeyError:
+                foo = 1
+    print min(ovrlp.keys()),',',ovrlp[min(ovrlp.keys())][-1]
         
 ##--------------------------------------------
 ## Uncomment below functions to generate state space
