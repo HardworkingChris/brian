@@ -1,6 +1,9 @@
 #import brian_no_units
+from numpy import array
 from brian import *
 import time
+
+from scipy.optimise import curve_fit
 
 from brian.library.IF import *
 from brian.library.synapses import *
@@ -318,6 +321,12 @@ def aout_vs_ain(neuron_multiply = 1, verbose=True):
     title('a_out vs input spike number a_in and sigma')
     axis([amin,amax,amin,amax])
 
+def right_curve_fit(x,a,b):
+    return a*sqrt(x) + b
+
+def left_curve_fit(x,a,b):
+    return a*exp(-x) + b
+    
 def isoclines(grid, neuron_multiply, verbose=True):
     amin = 0
     amax = 100
@@ -382,10 +391,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
     #plot(souts,souta,'r-')
     if verbose:
         print "Evaluation time:", time.time() - start_time, "seconds"
-    xlabel('sigma (ms)')
-    ylabel('a')
-    title('Isoclines')
-    axis([sigmamin / ms, sigmamax / ms, 0, 120])
+
     print "\nThe points of intersection are:\n"
     '''
     foo = 1
@@ -399,7 +405,26 @@ def isoclines(grid, neuron_multiply, verbose=True):
     print "stable fixed point at ",max(ovrlp.keys()),',',ovrlp[max(ovrlp.keys())][0]
     print "Saddle node at ",min(ovrlp.keys()),',',ovrlp[min(ovrlp.keys())][-1]
     print "\n"
-       
+    
+    # Curve fitting to left and right boundaries of the overlapping region
+    left = []
+    right = []
+    
+    for k in ovrlp.keys():
+        left.append((k,min(ovrlp[k])))
+        right.append((k,max(ovrlp[k])))
+    
+    left = array(left)
+    right = array(right)
+    
+    left_params = curve_fit(left_curve_fit,left[:,0],left[:,1])
+    right_params = curve_fit(right_curve_fit,right[:,0],right[:,1])
+    
+    
+    xlabel('sigma (ms)')
+    ylabel('a')
+    title('Isoclines')
+    axis([sigmamin / ms, sigmamax / ms, 0, 120])       
 ##--------------------------------------------
 ## Uncomment below functions to generate state space
 ##--------------------------------------------
