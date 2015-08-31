@@ -341,7 +341,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
     aouts = []
     souta = []
     souts = []
-    ovrlp = []
+    ovrlp = {}
     
     newsigma = 0. * ms
     for ai in range(grid + 1):
@@ -369,7 +369,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
                 plot([sigma / ms], [a], marker='.', color='r', markersize=15) 
             if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
                 ovrlp_s.append(sigma)
-                ovrlp.update{a:ovrlp_s}
+                ovrlp.update({a:ovrlp_s})
                 plot([sigma / ms], [a], marker='.', color='g', markersize=15)                        
             i += 1
             if verbose:
@@ -386,8 +386,10 @@ def isoclines(grid, neuron_multiply, verbose=True):
     title('Isoclines')
     axis([sigmamin / ms, sigmamax / ms, 0, 120])
     print "\nThe points of intersection are:\n"
-    print ovrlp[max(ovrlp.keys())][0]
-    print ovrlp[min(ovrlp.keys())][-1]
+    print ovrlp[max(ovrlp.keys())],',',ovrlp[max(ovrlp.keys())][0]
+    if ovrlp[min(ovrlp.keys())] < 10:
+        ovrlp.pop(min(ovrlp.keys()),'none')
+    print ovrlp[min(ovrlp.keys())],',',ovrlp[min(ovrlp.keys())][-1]
         
 ##--------------------------------------------
 ## Uncomment below functions to generate state space
@@ -398,7 +400,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-isoclines(10,5,False)
+isoclines(10,1)
 show()
 
 
