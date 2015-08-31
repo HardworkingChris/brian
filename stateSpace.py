@@ -417,9 +417,20 @@ def isoclines(grid, neuron_multiply, verbose=True):
     left = array(left)
     right = array(right)
     
-    left_params = curve_fit(left_curve_fit,left[:,0],left[:,1])
+    left_params = curve_fit(left_curve_fit,left[:,1],left[:,0])
     right_params = curve_fit(right_curve_fit,right[:,0],right[:,1])
     
+    [u,v] = left_params[0]
+    [l,m] = right_params[0]
+    
+    lx = linspace(sigmamin / ms,sigmamax / ms,20)
+    rx = linspace(amin,amax,20)
+    
+    ly = left_curve_fit(lx,u,v)
+    ry = right_curve_fit(rx,l,m)
+    
+    plot(lx,ly,'r-')
+    plot(rx,ry,'b-')
     
     xlabel('sigma (ms)')
     ylabel('a')
