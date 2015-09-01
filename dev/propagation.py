@@ -42,7 +42,7 @@ Cinput_E = Connection(Pinput, Pgp_E[0], 'y')
 Cinput_I = Connection(Pinput, Pgp_I[0], 'y')
 
 Cinput_E.connect_full(weight=weight_E)
-Cinput_I.connect_full(weight=weight_I)
+Cinput_I.connect_full(weight=weight_E)
 
 # Record the spikes
 Mgp_E = [SpikeMonitor(p) for p in Pgp_E]
