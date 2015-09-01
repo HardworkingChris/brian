@@ -106,13 +106,18 @@ class DefaultNetwork(Network):
         # define groups
         chaingroup = NeuronGroup(N=p.total_neurons, **Model(p))
         inputgroup = PulsePacket(p.initial_burst_t, p.neurons_in_input_layer, p.initial_burst_sigma)
-        layer = [ chaingroup.subgroup(p.neurons_per_layer) for i in range(p.num_layers) ]
+        layer_E = [ chaingroup.subgroup(p.neurons_per_layer * 0.88) for i in range(p.num_layers) ]
+        layer_I = [ chaingroup.subgroup(p.neurons_per_layer * 0.12) for i in range(p.num_layers) ]
         # connections
         chainconnect = Connection(chaingroup, chaingroup, 2,delay=5*ms)
         for i in range(p.num_layers - 1):
-            chainconnect.connect_full(layer[i], layer[i + 1], p.psp_peak * p.we)
+            chainconnect.connect_full(layer_E[i], layer_E[i + 1], p.psp_peak * p.we)
+            chainconnect.connect_full(layer_E[i], layer_I[i + 1], p.psp_peak * p.we)
+            chainconnect.connect_full(layer_I[i], layer_E[i + 1], p.psp_peak * p.wi)
+            chainconnect.connect_full(layer_I[i], layer_I[i + 1], p.psp_peak * p.wi)        
         inputconnect = Connection(inputgroup, chaingroup, 2)
-        inputconnect.connect_full(inputgroup, layer[0], p.psp_peak * p.we)
+        inputconnect.connect_full(inputgroup, layer_E[0], p.psp_peak * p.we)
+        inputconnect.connect_full(inputgroup, layer_I[0], p.psp_peak * p.we)
         # monitors
         chainmon = [SpikeMonitor(g, True) for g in layer]
         inputmon = SpikeMonitor(inputgroup, True)
