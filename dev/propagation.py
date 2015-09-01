@@ -45,7 +45,7 @@ Cinput_E.connect_full(weight=weight_E)
 Cinput_I.connect_full(weight=weight_I)
 
 # Record the spikes
-Mgp = [SpikeMonitor(p) for p in Pgp]
+Mgp = [SpikeMonitor(p) for p in Pgp_E]
 Minput = SpikeMonitor(Pinput)
 monitors = [Minput] + Mgp
 
