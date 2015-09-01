@@ -354,12 +354,12 @@ def isoclines(grid, neuron_multiply, verbose=True):
     aouts = []
     souta = []
     souts = []
-    inta = []
-    ints = []
-       
+    ovrlp = {}
+    
     newsigma = 0. * ms
     for ai in range(grid + 1):
-        for sigmai in range(grid + 1): #
+        ovrlp_s = []
+        for sigmai in range(grid + 1):
             a = int(amin + (ai * (amax - amin)) / grid)
             if a > amax: a = amax
             sigma = sigmamin + sigmai * (sigmamax - sigmamin) / grid
@@ -381,8 +381,9 @@ def isoclines(grid, neuron_multiply, verbose=True):
                 souts.append(sigma / ms)
                 plot([sigma / ms], [a], marker='.', color='r', markersize=15) 
             if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
-                inta.append(a)
-                ints.append(sigma / ms)
+                if a > 10:
+                    ovrlp_s.append(sigma / ms)
+                    ovrlp.update({a:ovrlp_s})
                 plot([sigma / ms], [a], marker='.', color='g', markersize=15)                        
             i += 1
             if verbose:
@@ -394,11 +395,27 @@ def isoclines(grid, neuron_multiply, verbose=True):
     #plot(souts,souta,'r-')
     if verbose:
         print "Evaluation time:", time.time() - start_time, "seconds"
+
+    print "\nThe points of intersection are:\n"
+    '''
+    foo = 1
+    while(foo):
+        if min(ovrlp.keys()) < 10:
+            try:
+                del ovrlp[min(ovrlp.keys())]
+            except KeyError:
+                foo = 0
+    '''
+    print "stable fixed point at ",max(ovrlp.keys()),',',ovrlp[max(ovrlp.keys())][0]
+    print "Saddle node at ",min(ovrlp.keys()),',',ovrlp[min(ovrlp.keys())][-1]
+    print "\n"
+    
+
     xlabel('sigma (ms)')
     ylabel('a')
     title('Isoclines')
-    axis([sigmamin / ms, sigmamax / ms, 0, 120])
-    
+    axis([sigmamin / ms, sigmamax / ms, 0, 100])       
+
 ##--------------------------------------------
 ## Uncomment below functions to generate state space
 ##--------------------------------------------
@@ -408,7 +425,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-isoclines(10,1)
+isoclines(3,50)
 show()
 
 
