@@ -28,7 +28,7 @@ Pinput = PulsePacket(t=10 * ms, n=user_n, sigma=user_sigma * ms)
 
 # The network structure.  Modified to be larger TMM
 Pgp_E = [ P.subgroup(88) for i in range(10)]
-Pgp_I = [ p.subgroup(12) for i in range(10)]
+Pgp_I = [ P.subgroup(12) for i in range(10)]
 C = Connection(P, P, 'y',delay=5*ms)
 
 # modified to be larger TMM
