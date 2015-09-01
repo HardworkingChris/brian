@@ -3,7 +3,7 @@ from numpy import array
 from brian import *
 import time
 
-from scipy.optimise import curve_fit
+from scipy.optimize import curve_fit
 
 from brian.library.IF import *
 from brian.library.synapses import *
@@ -378,7 +378,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
                 plot([sigma / ms], [a], marker='.', color='r', markersize=15) 
             if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
                 if a > 10:
-                    ovrlp_s.append(sigma)
+                    ovrlp_s.append(sigma / ms)
                     ovrlp.update({a:ovrlp_s})
                 plot([sigma / ms], [a], marker='.', color='g', markersize=15)                        
             i += 1
@@ -423,19 +423,21 @@ def isoclines(grid, neuron_multiply, verbose=True):
     [u,v] = left_params[0]
     [l,m] = right_params[0]
     
-    lx = linspace(sigmamin / ms,sigmamax / ms,20)
+    print u,v,l,m
+    
+    lx = linspace(sigmamin,sigmamax,20)
     rx = linspace(amin,amax,20)
     
     ly = left_curve_fit(lx,u,v)
     ry = right_curve_fit(rx,l,m)
     
     plot(lx,ly,'r-')
-    plot(rx,ry,'b-')
+    plot(ry / ms,ly,'b-')
     
     xlabel('sigma (ms)')
     ylabel('a')
     title('Isoclines')
-    axis([sigmamin / ms, sigmamax / ms, 0, 120])       
+    axis([sigmamin / ms, sigmamax / ms, 0, 100])       
 ##--------------------------------------------
 ## Uncomment below functions to generate state space
 ##--------------------------------------------
