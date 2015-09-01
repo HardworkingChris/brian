@@ -85,7 +85,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=88, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=100, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -106,8 +106,8 @@ class DefaultNetwork(Network):
         # define groups
         chaingroup = NeuronGroup(N=p.total_neurons, **Model(p))
         inputgroup = PulsePacket(p.initial_burst_t, p.neurons_in_input_layer, p.initial_burst_sigma)
-        layer_E = [ chaingroup.subgroup(p.neurons_per_layer * 0.88) for i in range(p.num_layers) ]
-        layer_I = [ chaingroup.subgroup(p.neurons_per_layer * 0.12) for i in range(p.num_layers) ]
+        layer_E = [ chaingroup.subgroup(int(p.neurons_per_layer * 0.88)) for i in range(p.num_layers) ]
+        layer_I = [ chaingroup.subgroup(int(p.neurons_per_layer * 0.12)) for i in range(p.num_layers) ]
         # connections
         chainconnect = Connection(chaingroup, chaingroup, 2,delay=5*ms)
         for i in range(p.num_layers - 1):
@@ -408,7 +408,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-isoclines(10,50,False)
+isoclines(10,1)
 show()
 
 
