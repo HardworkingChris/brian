@@ -45,9 +45,13 @@ Cinput_E.connect_full(weight=weight_E)
 Cinput_I.connect_full(weight=weight_I)
 
 # Record the spikes
-Mgp = [SpikeMonitor(p) for p in Pgp_E]
+Mgp_E = [SpikeMonitor(p) for p in Pgp_E]
+Mgp_I = [SpikeMonitor(p) for p in Pgp_I]
+
 Minput = SpikeMonitor(Pinput)
-monitors = [Minput] + Mgp
+
+monitors_E = [Minput] + Mgp_E
+monitors_I = [Minput] + Mgp_I
 
 # Setup the network, and run it
 P.V = Vr + rand(len(P)) * (Vt - Vr)
@@ -69,5 +73,7 @@ plot(trace.times/ms,trace[801]/mV)
 plot(trace.times/ms,trace[999]/mV)
 show()
 # Plot result
-raster_plot(showgrouplines=True, *monitors)
+raster_plot(showgrouplines=True, *monitors_E)
+show()
+raster_plot(showgrouplines=True, *monitors_I)
 show()
