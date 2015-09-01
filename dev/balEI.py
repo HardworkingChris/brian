@@ -119,16 +119,20 @@ class DefaultNetwork(Network):
         inputconnect.connect_full(inputgroup, layer_E[0], p.psp_peak * p.we)
         inputconnect.connect_full(inputgroup, layer_I[0], p.psp_peak * p.we)
         # monitors
-        chainmon = [SpikeMonitor(g, True) for g in layer]
+        chainmon_E = [SpikeMonitor(g, True) for g in layer_E]
+        chainmon_I = [SpikeMonitor(g, True) for g in layer_I]
         inputmon = SpikeMonitor(inputgroup, True)
-        mon = [inputmon] + chainmon
+        mon_E = [inputmon] + chainmon_E
+        mon_I = [inputmon] + chainmon_I
         # network
-        Network.__init__(self, chaingroup, inputgroup, chainconnect, inputconnect, mon)
+        Network.__init__(self, chaingroup, inputgroup, chainconnect, inputconnect, mon_E, mon_I)
         # add additional attributes to self
-        self.mon = mon
+        self.mon_E = mon_E
+        self.mon_I = mon_I
         self.inputgroup = inputgroup
         self.chaingroup = chaingroup
-        self.layer = layer
+        self.layer_E = layer_E
+        self.layer_I = layer_I
         self.params = p
 
     def prepare(self):
@@ -149,7 +153,12 @@ class DefaultNetwork(Network):
         raster_plot(ylabel="Layer", title="Synfire chain raster plot",
                    color=(1, 0, 0), markersize=3,
                    showgrouplines=False, spacebetweengroups=0.2, grouplinecol=(0.5, 0.5, 0.5),
-                   *self.mon)
+                   *self.mon_E)
+        show()
+        raster_plot(ylabel="Layer", title="Synfire chain raster plot",
+                   color=(0, 1, 0), markersize=3,
+                   showgrouplines=False, spacebetweengroups=0.2, grouplinecol=(0.5, 0.5, 0.5),
+                   *self.mon_I)
 
 def estimate_params(mon, time_est):
     # Quick and dirty algorithm for the moment, for a more decent algorithm
@@ -199,7 +208,7 @@ def state_space(grid, neuron_multiply, verbose=True):
             params.initial_burst_a, params.initial_burst_sigma = a, sigma
             net.reinit(params)
             net.run()
-            (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
+            (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
             col = (float(ai) / float(grid), float(sigmai) / float(grid), 0.5)
             plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
@@ -276,7 +285,7 @@ def newsigma_vs_sigmain(neuron_multiply = 1, verbose=True):
             params.initial_burst_a, params.initial_burst_sigma = ai, sigmai * ms
             net.reinit(params)
             net.run()
-            (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
+            (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
             sigmaOut.append(newsigma)
         plot(linspace(sigmamin,sigmamax,npts),sigmaOut)
     if verbose:
@@ -311,7 +320,7 @@ def aout_vs_ain(neuron_multiply = 1, verbose=True):
             params.initial_burst_a, params.initial_burst_sigma = ai, sigmai * ms
             net.reinit(params)
             net.run()
-            (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
+            (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
             aout.append(newa)
         plot(xrange(0,amax + step,step),aout)
@@ -357,7 +366,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
             params.initial_burst_a, params.initial_burst_sigma = a, sigma
             net.reinit(params)
             net.run()
-            (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
+            (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
        
             #col = (float(ai) / float(grid), float(sigmai) / float(grid), 0.5)
