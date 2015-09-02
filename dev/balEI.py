@@ -85,7 +85,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=100, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=110, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -180,7 +180,7 @@ def single_sfc():
     net.run()
     net.plot()
 
-def state_space(grid, neuron_multiply, verbose=True):
+def state_space(grid, neuron_multiply, weight, verbose=True):
     amin = 0
     amax = 100
     sigmamin = 0. * ms
@@ -206,6 +206,7 @@ def state_space(grid, neuron_multiply, verbose=True):
             if a > amax: a = amax
             sigma = sigmamin + sigmai * (sigmamax - sigmamin) / grid
             params.initial_burst_a, params.initial_burst_sigma = a, sigma
+            params.
             net.reinit(params)
             net.run()
             (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
