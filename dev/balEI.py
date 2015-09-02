@@ -91,7 +91,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=110, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=100, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -488,7 +488,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     xlabel('sigma (ms)')
     ylabel('a')
     title('Isoclines')
-    axis([sigmamin / ms, sigmamax / ms, 0, 100])       
+    axis([sigmamin / ms, sigmamax / ms, 0, 120])       
 
     return array([(max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]),(min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1])])
 
@@ -506,16 +506,18 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
 
 ##--------------------------------------------
 ## Uncomment below function to plot fixed point vs inhibition
+##--------------------------------------------
 params = default_params()
 wi = params.wi
 sfp = [] #Stable fixed point list
 sn = []  #Saddle node list
 ratio = []
-for i in linspace(0,wi,10)
+for i in linspace(0.01,wi,10)
     temp = fp_vs_inh(10,50,i,False)
     sfp.append(temp[0])
     sn.append(temp[1])
     ratio.append(params.we/i)
+    
 sfp = array(sfp)
 sn = array(sn)
 ratio = array(ratio)
@@ -525,7 +527,7 @@ mpl.rcParams['legend.fontsize'] = 10
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 
-z = ratio
+z = np.log10(ratio)
 xst = sfp[:,0]
 yst = sfp[:,1]
 xsn = sn[:,0]
