@@ -512,11 +512,11 @@ wi = params.wi
 sfp = [] #Stable fixed point list
 sn = []  #Saddle node list
 ratio = []
-for i in linspace(0.01,wi,10)
+for i in linspace(0.01,wi,10):
     temp = fp_vs_inh(10,50,i,False)
     sfp.append(temp[0])
     sn.append(temp[1])
-    ratio.append(params.we/i)
+    ratio.append(i)
     
 sfp = array(sfp)
 sn = array(sn)
@@ -527,7 +527,7 @@ mpl.rcParams['legend.fontsize'] = 10
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 
-z = np.log10(ratio)
+z = ratio
 xst = sfp[:,0]
 yst = sfp[:,1]
 xsn = sn[:,0]
