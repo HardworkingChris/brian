@@ -180,7 +180,7 @@ def single_sfc():
     net.run()
     net.plot()
 
-def state_space(grid, neuron_multiply, weight, verbose=True):
+def state_space(grid, neuron_multiply, verbose=True):
     amin = 0
     amax = 100
     sigmamin = 0. * ms
@@ -206,7 +206,6 @@ def state_space(grid, neuron_multiply, weight, verbose=True):
             if a > amax: a = amax
             sigma = sigmamin + sigmai * (sigmamax - sigmamin) / grid
             params.initial_burst_a, params.initial_burst_sigma = a, sigma
-            params.
             net.reinit(params)
             net.run()
             (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
@@ -341,9 +340,80 @@ def isoclines(grid, neuron_multiply, verbose=True):
     params = default_params()
     params.num_layers = 1
     params.neurons_per_layer = int(params.neurons_per_layer * neuron_multiply)
-
     net = DefaultNetwork(params)
+    i = 0
+    
+    if verbose:
+        print "Completed:"
+    start_time = time.time()
+    figure()
+    
+    aouta = []
+    aouts = []
+    souta = []
+    souts = []
+    ovrlp = {}
+    
+    newsigma = 0. * ms
+    for ai in range(grid + 1):
+        ovrlp_s = []
+        for sigmai in range(grid + 1):
+            a = int(amin + (ai * (amax - amin)) / grid)
+            if a > amax: a = amax
+            sigma = sigmamin + sigmai * (sigmamax - sigmamin) / grid
+            params.initial_burst_a, params.initial_burst_sigma = a, sigma
+            net.reinit(params)
+            net.run()
+            (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
+            newa = float(newa) / float(neuron_multiply)
+       
+            #col = (float(ai) / float(grid), float(sigmai) / float(grid), 0.5)
+            plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
+            plot([sigma / ms], [a], marker='.', color=[0,0,0], markersize=15)
+            if (newa-a >= 0): 
+                aouta.append(a)
+                aouts.append(sigma / ms)  
+                plot([sigma / ms], [a], marker='.', color='b', markersize=15) 
+            if (newsigma*1000 - sigma / ms) < 0.01:
+                souta.append(a)
+                souts.append(sigma / ms)
+                plot([sigma / ms], [a], marker='.', color='r', markersize=15) 
+            if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
+                if a > 10:
+                    ovrlp_s.append(sigma / ms)
+                    ovrlp.update({a:ovrlp_s})
+                plot([sigma / ms], [a], marker='.', color='g', markersize=15)                        
+            i += 1
+            if verbose:
+                print str(int(100. * float(i) / float((grid + 1) ** 2))) + "%",
+        if verbose:
+            print
+                    
 
+    if verbose:
+        print "Evaluation time:", time.time() - start_time, "seconds"
+
+    print "\nThe points of intersection are:\n"
+
+    xlabel('sigma (ms)')
+    ylabel('a')
+    title('Isoclines')
+    axis([sigmamin / ms, sigmamax / ms, 0, 100])       
+
+    print "stable fixed point at ",max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]
+    print "\nSaddle node at ",min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1]
+
+def isoclines(grid, neuron_multiply, weight, verbose=True):
+    amin = 0
+    amax = 100
+    sigmamin = 0. * ms
+    sigmamax = 4. * ms
+    dsigma = 1. * ms
+    params = default_params()
+    params.num_layers = 1
+    params.neurons_per_layer = int(params.neurons_per_layer * neuron_multiply)
+    params.wi = weight
+    net = DefaultNetwork(params)
     i = 0
     
     if verbose:
