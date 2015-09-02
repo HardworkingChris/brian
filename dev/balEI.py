@@ -412,7 +412,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
     title('Isoclines')
     axis([sigmamin / ms, sigmamax / ms, 0, 100])       
 
-    return [[max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]],[min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1]]]
+    return array([(max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]),(min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1])])
 
     
 ##--------------------------------------------
@@ -424,7 +424,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-print isoclines(10,20)
+print isoclines(10,50)
 show()
 
 
