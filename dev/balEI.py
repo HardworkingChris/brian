@@ -402,8 +402,9 @@ def isoclines(grid, neuron_multiply, verbose=True):
 
     print "stable fixed point at ",max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]
     print "\nSaddle node at ",min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1]
-
-def isoclines(grid, neuron_multiply, weight, verbose=True):
+    print "\n"
+    
+def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     amin = 0
     amax = 100
     sigmamin = 0. * ms
@@ -495,7 +496,14 @@ def isoclines(grid, neuron_multiply, weight, verbose=True):
 #state_space(8,10)
 #state_space(10,100)
 #state_space(10,50)
-print isoclines(10,50)
+#isoclines(10,50)
+
+##--------------------------------------------
+## Uncomment below function to plot fixed point vs inhibition
+params = default_params()
+wi = params.wi
+for i in linspace(0,wi,10)
+    fp_vs_inh(10,50,i,False)
 show()
 
 
