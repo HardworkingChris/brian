@@ -1,9 +1,15 @@
 #import brian_no_units
+from numpy import array
 from brian import *
 import time
 
 from brian.library.IF import *
 from brian.library.synapses import *
+
+import matplotlib as mpl
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
+import matplotlib.pyplot as plt
 
 def minimal_example():
     # Neuron model parameters
@@ -502,8 +508,14 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
 ## Uncomment below function to plot fixed point vs inhibition
 params = default_params()
 wi = params.wi
+sfp = [] #Stable fixed point list
+sn = []  #Saddle node list
 for i in linspace(0,wi,10)
-    fp_vs_inh(10,50,i,False)
+    temp = fp_vs_inh(10,50,i,False)
+    sfp.append(temp[0])
+    sn.append(temp[1])
+sfp = array(sfp)
+sn = array(sn)
 show()
 
 
