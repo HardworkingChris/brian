@@ -92,7 +92,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=100, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=125, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -572,9 +572,9 @@ def loadPlotData():
 #isoclines(10,50)
 
 ##--------------------------------------------
-## Uncomment below function to plot fixed point vs inhibition
+## Uncomment below function to run and plot fixed point vs inhibition
 ##--------------------------------------------
-fpVsInhRun()
+#fpVsInhRun()
 loadPlotData()
 
 
