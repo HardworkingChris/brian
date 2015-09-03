@@ -490,16 +490,16 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     title('Isoclines')
     axis([sigmamin / ms, sigmamax / ms, 0, 120])     
     
-    savefig(("wi{0}.png").format(weight), bbox_inches='tight')
+    savefig(("wi{0}.png").format(params.wi), bbox_inches='tight')
     
     print "\nweight ",weight  
     print "\nstable fixed point at ",max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]
     print "\nSaddle node at ",min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1]
     print "\n"   
      
-    try:
+    if ovrlp.keys!=[]:
         return array([(max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]),(min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1])])
-    except ValueError:
+    else:
         return ((0,0),(0,0))
 
     
@@ -523,7 +523,7 @@ sfp = [] #Stable fixed point list
 sn = []  #Saddle node list
 ratio = []
 for i in linspace(wi,-wi,10):
-    temp = fp_vs_inh(10,20,i,True)
+    temp = fp_vs_inh(10,5,i,True)
     sfp.append(temp[0])
     sn.append(temp[1])
     ratio.append(i)
