@@ -506,6 +506,58 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
         print "None\n"
         return ((0,0),(0,0))
 
+def fpVsInhRun():
+    params = default_params()
+    wi = params.wi
+    sfp = [] #Stable fixed point list
+    sn = []  #Saddle node list
+    ratio = []
+    for i in linspace(wi,10,25):
+        temp = fp_vs_inh(10,50,i,True)
+        sfp.append(temp[0])
+        sn.append(temp[1])
+        ratio.append(i)
+
+    sfp = array(sfp)
+    sn = array(sn)
+    ratio = array(ratio)
+
+    z = ratio
+    xst = sfp[:,0]
+    yst = sfp[:,1]
+    xsn = sn[:,0]
+    ysn = sn[:,1] 
+
+    # Save the data
+    f_sfp = open("sfp.p","wb")
+    f_sn  = open("sn.p","wb")
+    pickle.dump(sfp,f_sfp) 
+    pickle.dump(sn,f_sn)
+    
+def loadPlotData():
+    params = default_params()
+    wi = params.wi
+    sfp = [] #Stable fixed point list
+    sn = []  #Saddle node list
+    ratio = linspace(wi,10,25)
+    
+    sfp = pickle.load(open("sfp.p",'r'))
+    sn = pickle.load(open("sn.p",'r'))
+
+    z = ratio
+    xst = sfp[:,0]
+    yst = sfp[:,1]
+    xsn = sn[:,0]
+    ysn = sn[:,1] 
+
+    # Plot in 3D
+    mpl.rcParams['legend.fontsize'] = 10
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.plot(xst, yst, z, label='stable fixed points')
+    ax.plot(xsn, ysn, z, label='saddle node points')
+    ax.legend()
+    plt.show()
 
     
 ##--------------------------------------------
@@ -522,46 +574,8 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
 ##--------------------------------------------
 ## Uncomment below function to plot fixed point vs inhibition
 ##--------------------------------------------
-params = default_params()
-wi = params.wi
-sfp = [] #Stable fixed point list
-sn = []  #Saddle node list
-ratio = []
-for i in linspace(wi,10,25):
-    temp = fp_vs_inh(10,50,i,True)
-    sfp.append(temp[0])
-    sn.append(temp[1])
-    ratio.append(i)
-    
-sfp = array(sfp)
-sn = array(sn)
-ratio = array(ratio)
-
-z = ratio
-xst = sfp[:,0]
-yst = sfp[:,1]
-xsn = sn[:,0]
-ysn = sn[:,1] 
-
-# Save the data
-f_sfp = open("sfp.p","wb")
-f_sn  = open("sn.p","wb")
-pickle.dump(sfp,f_sfp) 
-pickle.dump(sn,f_sn)
-
-# Plot in 3D
-mpl.rcParams['legend.fontsize'] = 10
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-ax.plot(xst, yst, z, label='stable fixed points')
-ax.plot(xsn, ysn, z, label='saddle node points')
-ax.xlabel('a')
-ax.ylabel("sigma (in mSec)")
-ax.zlabel("Inh. weight")
-ax.legend()
-
-plt.show()
-
+fpVsInhRun()
+loadPlotData()
 
 
 ##--------------------------------------------
