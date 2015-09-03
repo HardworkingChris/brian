@@ -504,7 +504,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
 
     else:
         print "None\n"
-        return ((0,0),(0,0))
+        return ((None,None),(None,None))
 
 def fpVsInhRun():
     params = default_params()
@@ -512,7 +512,7 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(wi,10,25):
+    for i in linspace(2*wi,0,50):
         temp = fp_vs_inh(10,50,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
@@ -539,7 +539,7 @@ def loadPlotData():
     wi = params.wi
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
-    ratio = linspace(wi,10,25)
+    ratio = linspace(2*wi,0,50)
     
     sfp = pickle.load(open("sfp.p",'r'))
     sn = pickle.load(open("sn.p",'r'))
@@ -574,7 +574,7 @@ def loadPlotData():
 ##--------------------------------------------
 ## Uncomment below function to run and plot fixed point vs inhibition
 ##--------------------------------------------
-#fpVsInhRun()
+fpVsInhRun()
 loadPlotData()
 
 
