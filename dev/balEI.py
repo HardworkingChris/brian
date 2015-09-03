@@ -419,7 +419,6 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     params = default_params()
     params.num_layers = 1
     params.neurons_per_layer = int(params.neurons_per_layer * neuron_multiply)
-    params.wi = weight
     net = DefaultNetwork(params)
     i = 0
     
@@ -442,6 +441,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             if a > amax: a = amax
             sigma = sigmamin + sigmai * (sigmamax - sigmamin) / grid
             params.initial_burst_a, params.initial_burst_sigma = a, sigma
+            params.wi = weight
             net.reinit(params)
             net.run()
             (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
@@ -490,6 +490,8 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     title('Isoclines')
     axis([sigmamin / ms, sigmamax / ms, 0, 120])     
     
+    savefig(("wi{0}.png").format(weight), bbox_inches='tight')
+    
     print "\nweight ",weight  
     print "\nstable fixed point at ",max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]
     print "\nSaddle node at ",min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1]
@@ -520,8 +522,8 @@ wi = params.wi
 sfp = [] #Stable fixed point list
 sn = []  #Saddle node list
 ratio = []
-for i in linspace(0.01,wi,10):
-    temp = fp_vs_inh(10,50,i,True)
+for i in linspace(wi,-wi,10):
+    temp = fp_vs_inh(10,20,i,True)
     sfp.append(temp[0])
     sn.append(temp[1])
     ratio.append(i)
