@@ -11,6 +11,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import matplotlib.pyplot as plt
 
+import pickle
 def minimal_example():
     # Neuron model parameters
     Vr = -70 * mV
@@ -460,8 +461,8 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
                 plot([sigma / ms], [a], marker='.', color='r', markersize=15) 
             if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
                 if a > 10:
-                    ovrlp_s.append(sigma / ms)
-                    ovrlp.update({a:ovrlp_s})
+                    ovrlp_s.append(newsigma*1000)
+                    ovrlp.update({newa:ovrlp_s})
                 plot([sigma / ms], [a], marker='.', color='g', markersize=15)                        
             i += 1
             if verbose:
@@ -493,14 +494,18 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     savefig(("wi{0}.png").format(params.wi), bbox_inches='tight')
     
     print "\nweight ",weight  
-    print "\nstable fixed point at ",max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]
-    print "\nSaddle node at ",min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1]
-    print "\n"   
+
      
     if ovrlp.keys()!=[]:
+        print "\nstable fixed point at ",max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]
+        print "\nSaddle node at ",min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1]
+        print "\n"       
         return array([(max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]),(min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1])])
+
     else:
+        print "None\n"
         return ((0,0),(0,0))
+
 
     
 ##--------------------------------------------
@@ -522,8 +527,8 @@ wi = params.wi
 sfp = [] #Stable fixed point list
 sn = []  #Saddle node list
 ratio = []
-for i in linspace(wi,-wi,10):
-    temp = fp_vs_inh(10,5,i,True)
+for i in linspace(wi,0,1):
+    temp = fp_vs_inh(10,50,i,True)
     sfp.append(temp[0])
     sn.append(temp[1])
     ratio.append(i)
@@ -549,6 +554,11 @@ ax.legend()
 
 plt.show()
 
+# Save the data
+f_sfp = open("sfp.p","wb")
+f_sn  = open("sn.p","wb")
+pickle.dump(sfp,f_sfp) 
+pickle.dump(sn,f_sn)
 
 
 ##--------------------------------------------
