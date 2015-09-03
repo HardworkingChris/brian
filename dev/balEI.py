@@ -497,7 +497,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     print "\nSaddle node at ",min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1]
     print "\n"   
      
-    if ovrlp.keys!=[]:
+    if ovrlp.keys()!=[]:
         return array([(max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]),(min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1])])
     else:
         return ((0,0),(0,0))
