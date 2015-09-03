@@ -65,7 +65,7 @@ model_params = Parameters(
     Vr= -70 * mV,
     abs_refrac=1 * ms,
     we=34.7143,
-    wi= -34.7143,
+    wi=-34.7143,
     psp_peak=0.14 * mV,
     # Noise parameters
     noise_neurons=20000,
@@ -121,10 +121,13 @@ class DefaultNetwork(Network):
             chainconnect.connect_full(layer_E[i], layer_E[i + 1], p.psp_peak * p.we)
             chainconnect.connect_full(layer_E[i], layer_I[i + 1], p.psp_peak * p.we)
             chainconnect.connect_full(layer_I[i], layer_E[i + 1], p.psp_peak * p.wi)
-            chainconnect.connect_full(layer_I[i], layer_I[i + 1], p.psp_peak * p.wi)        
-        inputconnect = Connection(inputgroup, chaingroup, 2)
-        inputconnect.connect_full(inputgroup, layer_E[0], p.psp_peak * p.we)
-        inputconnect.connect_full(inputgroup, layer_I[0], p.psp_peak * p.we)
+            chainconnect.connect_full(layer_I[i], layer_I[i + 1], p.psp_peak * p.wi)    
+                
+        inputconnect_E = Connection(inputgroup, layer_E[0], 2)
+        inputconnect_E.connect_full(weight = p.psp_peak * p.we)
+        inputconnect_I = Connection(inputgroup, layer_I[0], 2)
+        inputconnect_I.connect_full(weight = p.psp_peak * p.we)
+        
         # monitors
         chainmon_E = [SpikeMonitor(g, True) for g in layer_E]
         chainmon_I = [SpikeMonitor(g, True) for g in layer_I]
@@ -132,7 +135,7 @@ class DefaultNetwork(Network):
         mon_E = [inputmon] + chainmon_E
         mon_I = [inputmon] + chainmon_I
         # network
-        Network.__init__(self, chaingroup, inputgroup, chainconnect, inputconnect, mon_E, mon_I)
+        Network.__init__(self, chaingroup, inputgroup, chainconnect, inputconnect_E, inputconnect_I, mon_E, mon_I)
         # add additional attributes to self
         self.mon_E = mon_E
         self.mon_I = mon_I
@@ -371,6 +374,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
             params.initial_burst_a, params.initial_burst_sigma = a, sigma
             net.reinit(params)
             net.run()
+            net.plot()
             (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
        
@@ -420,6 +424,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     params = default_params()
     params.num_layers = 1
     params.neurons_per_layer = int(params.neurons_per_layer * neuron_multiply)
+    params.wi = weight
     net = DefaultNetwork(params)
     i = 0
     
@@ -512,7 +517,7 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(2*wi,0,50):
+    for i in linspace(5*wi,0,50):
         temp = fp_vs_inh(10,50,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
@@ -539,7 +544,7 @@ def loadPlotData():
     wi = params.wi
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
-    ratio = linspace(2*wi,0,50)
+    ratio = linspace(5*wi,0,50)
     
     sfp = pickle.load(open("sfp.p",'r'))
     sn = pickle.load(open("sn.p",'r'))
@@ -574,9 +579,8 @@ def loadPlotData():
 ##--------------------------------------------
 ## Uncomment below function to run and plot fixed point vs inhibition
 ##--------------------------------------------
-fpVsInhRun()
-loadPlotData()
-
+#fpVsInhRun()
+#loadPlotData()
 
 ##--------------------------------------------
 ## Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c/3c and 4d
