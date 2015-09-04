@@ -532,22 +532,21 @@ def fpVsInhRun():
     ysn = sn[:,1] 
 
     # Save the data
-    f_sfp = open("sfp.p","w")
-    f_sn  = open("sn.p","w")
-    pickle.dump(sfp,f_sfp) 
-    pickle.dump(sn,f_sn)
+    f_sfp = open("sfp.p","wb")
+    f_sn  = open("sn.p","wb")
+    f_z = open("z.p","wb")
+    pickle.dump(sfp, f_sfp) 
+    pickle.dump(sn, f_sn)
+    pickle.dump(z, f_z)
     
 def loadPlotData():
-    params = default_params()
-    wi = params.wi
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
-    ratio = linspace(0,50,10)
     
     sfp = pickle.load(open("sfp.p",'r'))
     sn = pickle.load(open("sn.p",'r'))
+    z = pickle.load(open("z.p",'r'))
 
-    z = ratio
     xst = sfp[:,0]
     yst = sfp[:,1]
     xsn = sn[:,0]
