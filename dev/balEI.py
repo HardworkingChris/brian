@@ -151,7 +151,7 @@ class DefaultNetwork(Network):
 
     def reinit(self, p=None):
         Network.reinit(self)
-        print("params after reinit",self.params)
+        #print("params after reinit",self.params)
         q = self.params
         if p is None: p = q
         print("p.wi",p.wi)
@@ -526,7 +526,7 @@ def fpVsInhRun():
     sn = []  #Saddle node list
     ratio = []
     for i in linspace(-50,wi,15):
-        temp = fp_vs_inh(10,50,i,True)
+        temp = fp_vs_inh(3,10,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
         ratio.append(i)
@@ -586,11 +586,11 @@ def loadPlotData():
 ##--------------------------------------------
 ## Uncomment below function to run and plot fixed point vs inhibition
 ##--------------------------------------------
-#fpVsInhRun()
-#loadPlotData()
-params = default_params()
-params.wi = -340
-single_sfc(params)
+fpVsInhRun()
+loadPlotData()
+#params = default_params()
+#params.wi = -340
+#single_sfc(params)
 show()
 ##--------------------------------------------
 ## Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c/3c and 4d
