@@ -155,6 +155,7 @@ class DefaultNetwork(Network):
         if p is None: p = q
         self.inputgroup.generate(p.initial_burst_t, p.initial_burst_a, p.initial_burst_sigma)
         self.chaingroup.V = q.Vr + rand(len(self.chaingroup)) * (q.Vt - q.Vr)
+        self.params = p
 
     def run(self):
         Network.run(self, self.params.duration)
@@ -190,6 +191,8 @@ def single_sfc(params = None):
         net = DefaultNetwork(default_params)
     else:
         net = DefaultNetwork(params)
+    #params.wi = -700    
+    net.reinit(params)    
     net.run()
     net.plot()
 
@@ -449,7 +452,8 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             if a > amax: a = amax
             sigma = sigmamin + sigmai * (sigmamax - sigmamin) / grid
             params.initial_burst_a, params.initial_burst_sigma = a, sigma
-            net.reinit(params)
+            net = DefaultNetwork(params)
+            #net.reinit(params)
             net.run()
             (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
@@ -579,14 +583,11 @@ def loadPlotData():
 ##--------------------------------------------
 ## Uncomment below function to run and plot fixed point vs inhibition
 ##--------------------------------------------
-fpVsInhRun()
-loadPlotData()
-
-"""
+#fpVsInhRun()
+#loadPlotData()
 params = default_params()
-params.wi = -34
+params.wi = -340
 single_sfc(params)
-"""
 show()
 ##--------------------------------------------
 ## Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c/3c and 4d
