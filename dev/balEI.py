@@ -185,8 +185,11 @@ def estimate_params(mon, time_est):
         return (0, 0 * ms)
     return (len(times), times.std())
 
-def single_sfc():
-    net = DefaultNetwork(default_params)
+def single_sfc(params = None):
+    if params == None:
+        net = DefaultNetwork(default_params)
+    else:
+        net = DefaultNetwork(params)
     net.run()
     net.plot()
 
@@ -577,8 +580,11 @@ def loadPlotData():
 ## Uncomment below function to run and plot fixed point vs inhibition
 ##--------------------------------------------
 #fpVsInhRun()
-loadPlotData()
-
+#loadPlotData()
+params = default_params()
+params.wi = -200
+single_sfc(params)
+show()
 ##--------------------------------------------
 ## Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c/3c and 4d
 ##--------------------------------------------
