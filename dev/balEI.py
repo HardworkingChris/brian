@@ -116,7 +116,7 @@ class DefaultNetwork(Network):
         layer_E = [ chaingroup.subgroup(int(p.neurons_per_layer * 0.88)) for i in range(p.num_layers) ]
         layer_I = [ chaingroup.subgroup(int(p.neurons_per_layer * 0.12)) for i in range(p.num_layers) ]
         # connections
-        chainconnect = Connection(chaingroup, chaingroup, 2,delay=5*ms)
+        chainconnect = Connection(chaingroup, chaingroup, 2,delay=0*ms)
         for i in range(p.num_layers - 1):
             chainconnect.connect_full(layer_E[i], layer_E[i + 1], p.psp_peak * p.we)
             chainconnect.connect_full(layer_E[i], layer_I[i + 1], p.psp_peak * p.we)
@@ -579,11 +579,14 @@ def loadPlotData():
 ##--------------------------------------------
 ## Uncomment below function to run and plot fixed point vs inhibition
 ##--------------------------------------------
-#fpVsInhRun()
-#loadPlotData()
+fpVsInhRun()
+loadPlotData()
+
+"""
 params = default_params()
-params.wi = -200
+params.wi = -34
 single_sfc(params)
+"""
 show()
 ##--------------------------------------------
 ## Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c/3c and 4d
