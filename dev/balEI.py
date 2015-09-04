@@ -92,7 +92,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=125, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=100, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -374,7 +374,6 @@ def isoclines(grid, neuron_multiply, verbose=True):
             params.initial_burst_a, params.initial_burst_sigma = a, sigma
             net.reinit(params)
             net.run()
-            net.plot()
             (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
        
@@ -447,7 +446,6 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             if a > amax: a = amax
             sigma = sigmamin + sigmai * (sigmamax - sigmamin) / grid
             params.initial_burst_a, params.initial_burst_sigma = a, sigma
-            params.wi = weight
             net.reinit(params)
             net.run()
             (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
@@ -509,7 +507,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
 
     else:
         print "None\n"
-        return ((None,None),(None,None))
+        return ((0,0),(0,0))
 
 def fpVsInhRun():
     params = default_params()
@@ -534,8 +532,8 @@ def fpVsInhRun():
     ysn = sn[:,1] 
 
     # Save the data
-    f_sfp = open("sfp.p","wb")
-    f_sn  = open("sn.p","wb")
+    f_sfp = open("sfp.p","w")
+    f_sn  = open("sn.p","w")
     pickle.dump(sfp,f_sfp) 
     pickle.dump(sn,f_sn)
     
@@ -544,7 +542,7 @@ def loadPlotData():
     wi = params.wi
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
-    ratio = linspace(5*wi,0,50)
+    ratio = linspace(0,50,10)
     
     sfp = pickle.load(open("sfp.p",'r'))
     sn = pickle.load(open("sn.p",'r'))
@@ -580,7 +578,7 @@ def loadPlotData():
 ## Uncomment below function to run and plot fixed point vs inhibition
 ##--------------------------------------------
 #fpVsInhRun()
-#loadPlotData()
+loadPlotData()
 
 ##--------------------------------------------
 ## Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c/3c and 4d
