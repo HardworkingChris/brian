@@ -151,15 +151,18 @@ class DefaultNetwork(Network):
 
     def reinit(self, p=None):
         Network.reinit(self)
+        print("params after reinit",self.params)
         q = self.params
         if p is None: p = q
+        print("p.wi",p.wi)
         self.inputgroup.generate(p.initial_burst_t, p.initial_burst_a, p.initial_burst_sigma)
-        self.chaingroup.V = q.Vr + rand(len(self.chaingroup)) * (q.Vt - q.Vr)
+        self.chaingroup.V = p.Vr + rand(len(self.chaingroup)) * (p.Vt - p.Vr)
         self.params = p
 
     def run(self):
         Network.run(self, self.params.duration)
-
+        print "self.params.wi ",self.params.wi,"\n"
+        
     def plot(self):
         raster_plot(ylabel="Layer", title="Synfire chain raster plot",
                    color=(1, 0, 0), markersize=3,
@@ -452,8 +455,8 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             if a > amax: a = amax
             sigma = sigmamin + sigmai * (sigmamax - sigmamin) / grid
             params.initial_burst_a, params.initial_burst_sigma = a, sigma
-            net = DefaultNetwork(params)
-            #net.reinit(params)
+            params.wi = weight
+            net.reinit(params)
             net.run()
             (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
