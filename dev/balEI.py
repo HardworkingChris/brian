@@ -525,7 +525,7 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(-50,wi,15):
+    for i in linspace(-50,-wi,5):
         temp = fp_vs_inh(3,10,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
