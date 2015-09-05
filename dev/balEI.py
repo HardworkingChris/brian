@@ -181,10 +181,12 @@ def estimate_params(mon, time_est):
     # http://www.scipy.org/doc/api_docs/SciPy.optimize.minpack.html#leastsq
     i, times = zip(*mon.spikes)
     times = array(times)
+    """
     times = times[abs(times - time_est) < 15 * ms]
     if len(times) == 0:
         return (0, 0 * ms)
     better_time_est = times.mean()
+    """
     times = times[abs(times - time_est) < 5 * ms]
     if len(times) == 0:
         return (0, 0 * ms)
@@ -587,11 +589,12 @@ def loadPlotData():
 ##--------------------------------------------
 ## Uncomment below function to run and plot fixed point vs inhibition
 ##--------------------------------------------
-fpVsInhRun()
-loadPlotData()
-#params = default_params()
-#params.wi = -340
-#single_sfc(params)
+#fpVsInhRun()
+#loadPlotData()
+params = default_params()
+params.wi = -9.0
+params.initial_burst_a, params.initial_burst_sigma = 100, 0 * ms
+single_sfc(params)
 show()
 ##--------------------------------------------
 ## Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c/3c and 4d
