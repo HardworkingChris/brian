@@ -92,7 +92,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=100, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=125, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -154,7 +154,7 @@ class DefaultNetwork(Network):
         #print("params after reinit",self.params)
         q = self.params
         if p is None: p = q
-        print("p.wi",p.wi)
+        #print("p.wi",p.wi)
         self.inputgroup.generate(p.initial_burst_t, p.initial_burst_a, p.initial_burst_sigma)
         self.chaingroup.V = p.Vr + rand(len(self.chaingroup)) * (p.Vt - p.Vr)
         self.params = p
@@ -526,7 +526,7 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(wi,-wi,5):
+    for i in linspace(2*wi,-2*wi,5):
         temp = fp_vs_inh(10,10,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
