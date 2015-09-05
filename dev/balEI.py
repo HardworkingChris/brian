@@ -476,16 +476,22 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             if (newa-a >= 0): 
                 aouta.append(a)
                 aouts.append(sigma / ms)  
-                plot([sigma / ms], [a], marker='.', color='b', markersize=15) 
-            if (newsigma*1000 - sigma / ms) < 0.01:
-                souta.append(a)
-                souts.append(sigma / ms)
-                plot([sigma / ms], [a], marker='.', color='r', markersize=15) 
-            if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
-                if a > 10:
-                    ovrlp_s.append(newsigma*1000)
-                    ovrlp.update({newa:ovrlp_s})
-                plot([sigma / ms], [a], marker='.', color='g', markersize=15)                        
+                plot([sigma / ms], [a], marker='.', color='b', markersize=15)
+            try:     
+                if (newsigma*1000 - sigma / ms) < 0.01:
+                    souta.append(a)
+                    souts.append(sigma / ms)
+                    plot([sigma / ms], [a], marker='.', color='r', markersize=15)
+            except brian.fundamentalunits.DimensionMismatchError:
+                 plot([sigma / ms], [a], marker='.', color='b', markersize=15)
+            try:
+                if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
+                    if a > 10:
+                        ovrlp_s.append(newsigma*1000)
+                        ovrlp.update({newa:ovrlp_s})
+                    plot([sigma / ms], [a], marker='.', color='g', markersize=15)
+            except brian.fundamentalunits.DimensionMismatchError:
+                plot([sigma / ms], [a], marker='.', color='b', markersize=15)              
             i += 1
             if verbose:
                 print str(int(100. * float(i) / float((grid + 1) ** 2))) + "%",
