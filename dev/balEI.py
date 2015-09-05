@@ -482,7 +482,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
                     souta.append(a)
                     souts.append(sigma / ms)
                     plot([sigma / ms], [a], marker='.', color='r', markersize=15)
-            except brian.fundamentalunits.DimensionMismatchError:
+            except fundamentalunits.DimensionMismatchError:
                  plot([sigma / ms], [a], marker='.', color='b', markersize=15)
             try:
                 if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
@@ -490,7 +490,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
                         ovrlp_s.append(newsigma*1000)
                         ovrlp.update({newa:ovrlp_s})
                     plot([sigma / ms], [a], marker='.', color='g', markersize=15)
-            except brian.fundamentalunits.DimensionMismatchError:
+            except fundamentalunits.DimensionMismatchError:
                 plot([sigma / ms], [a], marker='.', color='b', markersize=15)              
             i += 1
             if verbose:
@@ -539,7 +539,7 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(wi,0,1):
+    for i in linspace(wi,0,7):
         temp = fp_vs_inh(10,1,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
