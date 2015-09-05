@@ -173,6 +173,7 @@ class DefaultNetwork(Network):
                    color=(0, 1, 0), markersize=3,
                    showgrouplines=False, spacebetweengroups=0.2, grouplinecol=(0.5, 0.5, 0.5),
                    *self.mon_I)
+        show()           
 
 def estimate_params(mon, time_est):
     # Quick and dirty algorithm for the moment, for a more decent algorithm
@@ -198,7 +199,7 @@ def single_sfc(params = None):
     net.reinit(params)    
     net.run()
     net.plot()
-
+    show()
 def state_space(grid, neuron_multiply, verbose=True):
     amin = 0
     amax = 100
@@ -457,6 +458,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             params.initial_burst_a, params.initial_burst_sigma = a, sigma
             params.wi = weight
             net.reinit(params)
+            #single_sfc(params)
             net.run()
             (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
@@ -503,7 +505,6 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     ylabel('a')
     title('Isoclines')
     axis([sigmamin / ms, sigmamax / ms, 0, 120])     
-    
     savefig(("wi{0}.png").format(params.wi), bbox_inches='tight')
     
     print "\nweight ",weight  
@@ -525,8 +526,8 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(-50,-wi,5):
-        temp = fp_vs_inh(3,10,i,True)
+    for i in linspace(wi,-wi,5):
+        temp = fp_vs_inh(10,10,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
         ratio.append(i)
