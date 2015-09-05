@@ -432,7 +432,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     sigmamax = 4. * ms
     dsigma = 1. * ms
     params = default_params()
-    params.num_layers = 1
+    params.num_layers = 2
     params.neurons_per_layer = int(params.neurons_per_layer * neuron_multiply)
     params.wi = weight
     net = DefaultNetwork(params)
@@ -461,9 +461,12 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             net.reinit(params)
             #single_sfc(params)
             net.run()
-            show()
-            raster_plot(*net.mon_E)
-            show()
+            
+            # Debug
+            #show()
+            #raster_plot(showgrouplines = True,*net.mon_E)
+            #show()
+            
             (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
        
@@ -530,8 +533,8 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(99999*wi,-2*wi,1):
-        temp = fp_vs_inh(10,10,i,True)
+    for i in linspace(wi,0,1):
+        temp = fp_vs_inh(10,1,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
         ratio.append(i)
