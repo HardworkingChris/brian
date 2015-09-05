@@ -161,7 +161,7 @@ class DefaultNetwork(Network):
 
     def run(self):
         Network.run(self, self.params.duration)
-        print "self.params.wi ",self.params.wi,"\n"
+        #print "self.params.wi ",self.params.wi,"\n"
         
     def plot(self):
         raster_plot(ylabel="Layer", title="Synfire chain raster plot",
@@ -181,12 +181,10 @@ def estimate_params(mon, time_est):
     # http://www.scipy.org/doc/api_docs/SciPy.optimize.minpack.html#leastsq
     i, times = zip(*mon.spikes)
     times = array(times)
-    """
     times = times[abs(times - time_est) < 15 * ms]
     if len(times) == 0:
         return (0, 0 * ms)
     better_time_est = times.mean()
-    """
     times = times[abs(times - time_est) < 5 * ms]
     if len(times) == 0:
         return (0, 0 * ms)
@@ -202,6 +200,7 @@ def single_sfc(params = None):
     net.run()
     net.plot()
     show()
+    
 def state_space(grid, neuron_multiply, verbose=True):
     amin = 0
     amax = 100
@@ -462,6 +461,9 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             net.reinit(params)
             #single_sfc(params)
             net.run()
+            show()
+            raster_plot(*net.mon_E)
+            show()
             (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
        
@@ -528,7 +530,7 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(2*wi,-2*wi,5):
+    for i in linspace(99999*wi,-2*wi,1):
         temp = fp_vs_inh(10,10,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
@@ -589,12 +591,14 @@ def loadPlotData():
 ##--------------------------------------------
 ## Uncomment below function to run and plot fixed point vs inhibition
 ##--------------------------------------------
-#fpVsInhRun()
-#loadPlotData()
+fpVsInhRun()
+loadPlotData()
+"""
 params = default_params()
 params.wi = -9.0
 params.initial_burst_a, params.initial_burst_sigma = 100, 0 * ms
 single_sfc(params)
+"""
 show()
 ##--------------------------------------------
 ## Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c/3c and 4d
