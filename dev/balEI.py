@@ -546,8 +546,8 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     close()
  
     figure()                               
-    plot(pol_a(tmpa) / ms,tmpa,'b-')
-    plot(pol_s(tmpa) / ms,tmpa,'r-')
+    plot(pol_a(tmpa) / ms,tmpa,'b-',label = "y = {0} + x^{1} + x^{2}".format(pol_a[0],pol_a[1],pol_a[2]))
+    plot(pol_s(tmpa) / ms,tmpa,'r-',label = "y = {0} + x^{1} + x^{2}".format(pol_s[0],pol_a[1],pol_a[2]))
     xlabel('sigma (ms)')
     ylabel('a')
     title('Isoclines')
