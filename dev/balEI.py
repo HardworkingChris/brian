@@ -537,20 +537,23 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     tmpa = linspace(amin,amax+100,50)
     plot(pol_a(tmpa) / ms,tmpa,'b-',label = "a-nullcline")
     plot(pol_s(tmpa) / ms,tmpa,'r-',label = "sigma-nullcline")
-
+    mpl.rcParams['legend.fontsize'] = 10
     xlabel('sigma (ms)')
     ylabel('a')
     title('Isoclines')
-    axis([sigmamin / ms, sigmamax / ms, 0, 160])     
+    legend()
+    axis([sigmamin / ms, sigmamax / ms, 0, 100])     
     savefig(("wi{0}.png").format(params.wi), bbox_inches='tight')
     close()
  
     figure()                               
-    plot(pol_a(tmpa) / ms,tmpa,'b-',label = "y = {0} + x^{1} + x^{2}".format(pol_a[0],pol_a[1],pol_a[2]))
-    plot(pol_s(tmpa) / ms,tmpa,'r-',label = "y = {0} + x^{1} + x^{2}".format(pol_s[0],pol_a[1],pol_a[2]))
+    plot(pol_a(tmpa) / ms,tmpa,'b-',label = "a : y = {0} + x^{1} + x^{2}".format(z_a[0],z_a[1],z_a[2]))
+    plot(pol_s(tmpa) / ms,tmpa,'r-',label = "sigma :y = {0} + x^{1} + x^{2}".format(z_s[0],z_s[1],z_s[2]))
+    mpl.rcParams['legend.fontsize'] = 10    
     xlabel('sigma (ms)')
     ylabel('a')
     title('Isoclines')
+    legend()
     axis([sigmamin / ms, sigmamax / ms, 0, 150])    
     savefig(("isoclines{0}.png").format(params.wi), bbox_inches='tight')
     close()
