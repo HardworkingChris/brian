@@ -535,8 +535,8 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     print "pol_s : ",z_s,"\n"    
     pol_s = np.poly1d(z_s)
     tmpa = linspace(amin,amax+100,50)
-    plot(pol_a(tmpa) / ms,tmpa,'b-')
-    plot(pol_s(tmpa) / ms,tmpa,'r-')
+    plot(pol_a(tmpa) / ms,tmpa,'b-',label = "a-nullcline")
+    plot(pol_s(tmpa) / ms,tmpa,'r-',label = "sigma-nullcline")
 
     xlabel('sigma (ms)')
     ylabel('a')
