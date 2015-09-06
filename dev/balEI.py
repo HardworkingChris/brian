@@ -507,11 +507,19 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     for i in bound_a.keys():
         lista_a.append(i)
         lista_s.append(max(bound_a[i]))
-    for i in bound_s.keys():
+    for i in bound_sigma.keys():
         lists_a.append(i)
-        lists_s.append(min(bound_s[i]))
-                                
-    #plot(aouts,aouta,'b-')
+        lists_s.append(min(bound_sigma[i]))
+    
+    z_a = np.polyfit(lista_a,lista_s,2)
+    pol_a = np.poly1d(z_a)
+    z_s = np.polyfit(lists_a,lists_s,2)
+    pol_s = np.poly1d(z_s)
+    tmpa = linspace(amin,amax,30)
+                               
+    plot(tmpa,pol_a(tmpa),'b-')
+    plot(tmpa,pol_s(tmpa),'r-')
+    
     #plot(souts,souta,'r-')
     if verbose:
         print "Evaluation time:", time.time() - start_time, "seconds"
@@ -552,7 +560,7 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(3*wi,0,20):
+    for i in linspace(wi,0,1):
         temp = fp_vs_inh(10,1,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
