@@ -451,8 +451,11 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     bound_a = {}
     bound_sigma = {}
     newsigma = 0. * ms
+    
     for ai in range(grid + 1):
         ovrlp_s = []
+        bas = []
+        bsa = []
         for sigmai in range(grid + 1):
             a = int(amin + (ai * (amax - amin)) / grid)
             if a > amax: a = amax
@@ -475,13 +478,13 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
             plot([sigma / ms], [a], marker='.', color=[0,0,0], markersize=15)
             if (newa-a >= 0): 
-                aouta.append(a)
-                aouts.append(sigma / ms)  
+                bas.append(sigma)
+                bound_a.update({a:bas})  
                 plot([sigma / ms], [a], marker='.', color='b', markersize=15)
             try:     
                 if (newsigma*1000 - sigma / ms) < 0.01:
-                    souta.append(a)
-                    souts.append(sigma / ms)
+                    bsa.append(sigma)
+                    bound_sigma.update({a:bsa})  
                     plot([sigma / ms], [a], marker='.', color='r', markersize=15)
             except fundamentalunits.DimensionMismatchError:
                  plot([sigma / ms], [a], marker='.', color='b', markersize=15)
