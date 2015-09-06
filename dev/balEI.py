@@ -513,12 +513,14 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     
     z_a = np.polyfit(lista_a,lista_s,2)
     pol_a = np.poly1d(z_a)
+    print "pol_a : ",z_a,"\n"
     z_s = np.polyfit(lists_a,lists_s,2)
+    print "pol_s : ",z_s,"\n"    
     pol_s = np.poly1d(z_s)
-    tmpa = linspace(amin,amax,30)
+    tmpa = linspace(amin,amax+100,50)
                                
-    plot(tmpa,pol_a(tmpa),'b-')
-    plot(tmpa,pol_s(tmpa),'r-')
+    plot(pol_a(tmpa) / ms,tmpa,'b-')
+    plot(pol_s(tmpa) / ms,tmpa,'r-')
     
     #plot(souts,souta,'r-')
     if verbose:
@@ -538,9 +540,9 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     xlabel('sigma (ms)')
     ylabel('a')
     title('Isoclines')
-    axis([sigmamin / ms, sigmamax / ms, 0, 120])     
+    axis([sigmamin / ms, sigmamax / ms, 0, 160])     
     savefig(("wi{0}.png").format(params.wi), bbox_inches='tight')
-    close()
+    #close()
     print "\nweight ",weight  
 
      
