@@ -503,25 +503,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
         if verbose:
             print
     
-    # Pick up the boundary points
-    for i in bound_a.keys():
-        lista_a.append(i)
-        lista_s.append(max(bound_a[i]))
-    for i in bound_sigma.keys():
-        lists_a.append(i)
-        lists_s.append(min(bound_sigma[i]))
-    
-    z_a = np.polyfit(lista_a,lista_s,2)
-    pol_a = np.poly1d(z_a)
-    print "pol_a : ",z_a,"\n"
-    z_s = np.polyfit(lists_a,lists_s,2)
-    print "pol_s : ",z_s,"\n"    
-    pol_s = np.poly1d(z_s)
-    tmpa = linspace(amin,amax+100,50)
-                               
-    plot(pol_a(tmpa) / ms,tmpa,'b-')
-    plot(pol_s(tmpa) / ms,tmpa,'r-')
-    
+   
     #plot(souts,souta,'r-')
     if verbose:
         print "Evaluation time:", time.time() - start_time, "seconds"
@@ -542,9 +524,35 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     title('Isoclines')
     axis([sigmamin / ms, sigmamax / ms, 0, 160])     
     savefig(("wi{0}.png").format(params.wi), bbox_inches='tight')
-    #close()
+    close()
+ 
+    figure()
+    # Pick up the boundary points
+    for i in bound_a.keys():
+        lista_a.append(i)
+        lista_s.append(max(bound_a[i]))
+    for i in bound_sigma.keys():
+        lists_a.append(i)
+        lists_s.append(min(bound_sigma[i]))
+    
+    z_a = np.polyfit(lista_a,lista_s,2)
+    pol_a = np.poly1d(z_a)
+    print "pol_a : ",z_a,"\n"
+    z_s = np.polyfit(lists_a,lists_s,2)
+    print "pol_s : ",z_s,"\n"    
+    pol_s = np.poly1d(z_s)
+    tmpa = linspace(amin,amax+100,50)
+                               
+    plot(pol_a(tmpa) / ms,tmpa,'b-')
+    plot(pol_s(tmpa) / ms,tmpa,'r-')
+    xlabel('sigma (ms)')
+    ylabel('a')
+    title('Isoclines')
+    axis([sigmamin / ms, sigmamax / ms, 0, 150])    
+    savefig(("isoclines{0}.png").format(params.wi), bbox_inches='tight')
+    close()
+     
     print "\nweight ",weight  
-
      
     if ovrlp.keys()!=[]:
         print "\nstable fixed point at ",max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]
