@@ -519,7 +519,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     title('Isoclines')
     axis([sigmamin / ms, sigmamax / ms, 0, 120])     
     savefig(("wi{0}.png").format(params.wi), bbox_inches='tight')
-    
+    close()
     print "\nweight ",weight  
 
      
@@ -539,7 +539,7 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(wi,0,7):
+    for i in linspace(3*wi,0,20):
         temp = fp_vs_inh(10,1,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
