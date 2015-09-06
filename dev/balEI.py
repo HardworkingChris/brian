@@ -92,7 +92,7 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=125, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer=110, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -484,8 +484,9 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
                 plot([sigma / ms], [a], marker='.', color='b', markersize=15)
             try:     
                 if (newsigma*1000 - sigma / ms) < 0.01:
-                    bsa.append(sigma)
-                    bound_sigma.update({a:bsa})  
+                    if a > 30:
+                        bsa.append(sigma)
+                        bound_sigma.update({a:bsa})  
                     plot([sigma / ms], [a], marker='.', color='r', markersize=15)
             except fundamentalunits.DimensionMismatchError:
                  plot([sigma / ms], [a], marker='.', color='b', markersize=15)
@@ -519,14 +520,6 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
                 foo = 0
     '''
 
-    xlabel('sigma (ms)')
-    ylabel('a')
-    title('Isoclines')
-    axis([sigmamin / ms, sigmamax / ms, 0, 160])     
-    savefig(("wi{0}.png").format(params.wi), bbox_inches='tight')
-    close()
- 
-    figure()
     # Pick up the boundary points
     for i in bound_a.keys():
         lista_a.append(i)
@@ -542,7 +535,17 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     print "pol_s : ",z_s,"\n"    
     pol_s = np.poly1d(z_s)
     tmpa = linspace(amin,amax+100,50)
-                               
+    plot(pol_a(tmpa) / ms,tmpa,'b-')
+    plot(pol_s(tmpa) / ms,tmpa,'r-')
+
+    xlabel('sigma (ms)')
+    ylabel('a')
+    title('Isoclines')
+    axis([sigmamin / ms, sigmamax / ms, 0, 160])     
+    savefig(("wi{0}.png").format(params.wi), bbox_inches='tight')
+    close()
+ 
+    figure()                               
     plot(pol_a(tmpa) / ms,tmpa,'b-')
     plot(pol_s(tmpa) / ms,tmpa,'r-')
     xlabel('sigma (ms)')
