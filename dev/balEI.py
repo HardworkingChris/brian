@@ -448,7 +448,8 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     souta = []
     souts = []
     ovrlp = {}
-    
+    bound_a = {}
+    bound_sigma = {}
     newsigma = 0. * ms
     for ai in range(grid + 1):
         ovrlp_s = []
