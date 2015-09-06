@@ -443,10 +443,10 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     start_time = time.time()
     figure()
     
-    aouta = []
-    aouts = []
-    souta = []
-    souts = []
+    lista_a = []
+    lista_s = []
+    lists_a = []
+    lists_s = []
     ovrlp = {}
     bound_a = {}
     bound_sigma = {}
@@ -478,8 +478,9 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
             plot([sigma / ms], [a], marker='.', color=[0,0,0], markersize=15)
             if (newa-a >= 0): 
-                bas.append(sigma)
-                bound_a.update({a:bas})  
+                if a > 10:
+                    bas.append(sigma)
+                    bound_a.update({a:bas})  
                 plot([sigma / ms], [a], marker='.', color='b', markersize=15)
             try:     
                 if (newsigma*1000 - sigma / ms) < 0.01:
@@ -501,7 +502,15 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
                 print str(int(100. * float(i) / float((grid + 1) ** 2))) + "%",
         if verbose:
             print
-                    
+    
+    # Pick up the boundary points
+    for i in bound_a.keys():
+        lista_a.append(i)
+        lista_s.append(max(bound_a[i]))
+    for i in bound_s.keys():
+        lists_a.append(i)
+        lists_s.append(min(bound_s[i]))
+                                
     #plot(aouts,aouta,'b-')
     #plot(souts,souta,'r-')
     if verbose:
