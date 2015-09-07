@@ -453,7 +453,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
     title('Isoclines')
     legend()
     axis([sigmamin / ms, sigmamax / ms, 0, 100])     
-    savefig("sS{0}.png", bbox_inches='tight')
+    savefig("sS for w {0}.png".format(params.neurons_per_layer/neuron_multiply), bbox_inches='tight')
     close()
  
     figure()                               
@@ -465,10 +465,9 @@ def isoclines(grid, neuron_multiply, verbose=True):
     title('Isoclines')
     legend()
     axis([sigmamin / ms, sigmamax / ms, 0, 150])    
-    savefig("isoclines eqn.png", bbox_inches='tight')
+    savefig("isoclines eqn for w {0}.png".format(params.neurons_per_layer/neuron_multiply), bbox_inches='tight')
     close()
      
-    print "\nweight ",weight  
      
     if ovrlp.keys()!=[]:
         print "\nstable fixed point at ",max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]

@@ -214,9 +214,11 @@ def state_space(grid, neuron_multiply, verbose=True):
     net = DefaultNetwork(params)
 
     i = 0
-    # uncomment these 2 lines for TeX labels
+    #...................
+    #uncomment these 2 lines for TeX labels
     #import pylab
     #pylab.rc_params.update({'text.usetex': True})
+    #...................
     if verbose:
         print "Completed:"
     start_time = time.time()
@@ -519,7 +521,13 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             except KeyError:
                 foo = 0
     '''
-
+    
+    #...................
+    #uncomment these 2 lines for TeX labels
+    #import pylab
+    #pylab.rc_params.update({'text.usetex': True})
+    #...................
+    
     # Pick up the boundary points
     for i in bound_a.keys():
         lista_a.append(i)
@@ -547,8 +555,8 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     close()
  
     figure()                               
-    plot(pol_a(tmpa) / ms,tmpa,'b-',label = "a : y = {0} + x^{1} + x^{2}".format(z_a[0],z_a[1],z_a[2]))
-    plot(pol_s(tmpa) / ms,tmpa,'r-',label = "sigma :y = {0} + x^{1} + x^{2}".format(z_s[0],z_s[1],z_s[2]))
+    plot(pol_a(tmpa) / ms,tmpa,'b-',label = "a : y = {0} + {1}x + {2}x^2".format(z_a[0],z_a[1],z_a[2]))
+    plot(pol_s(tmpa) / ms,tmpa,'r-',label = "sigma :y = {0} + {1}x + {2}x^2".format(z_s[0],z_s[1],z_s[2]))
     mpl.rcParams['legend.fontsize'] = 10    
     xlabel('sigma (ms)')
     ylabel('a')
