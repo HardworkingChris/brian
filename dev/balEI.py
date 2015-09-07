@@ -100,9 +100,12 @@ default_params = Parameters(
     initial_burst_a=85,
     initial_burst_sigma=1 * ms,
     # these values are recomputed whenever another value changes
-    computed_network_parameters="""
-    total_neurons = neurons_per_layer * num_layers
-    """,
+    total_neurons=1250,
+    
+    #computed_network_parameters="""
+    #total_neurons = neurons_per_layer * num_layers
+    #""",
+
     # plus we also use the default model parameters
     ** model_params
     )
