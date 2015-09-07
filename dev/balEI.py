@@ -92,20 +92,16 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=110, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
-    neuron_multiply = 1,
+    neurons_per_layer=125, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
     initial_burst_a=85,
     initial_burst_sigma=1 * ms,
     # these values are recomputed whenever another value changes
-    total_neurons=1250,
-    
-    #computed_network_parameters="""
-    #total_neurons = neurons_per_layer * num_layers
-    #""",
-
+    computed_network_parameters="""
+    total_neurons = neurons_per_layer * num_layers
+    """,
     # plus we also use the default model parameters
     ** model_params
     )
@@ -117,13 +113,8 @@ class DefaultNetwork(Network):
         # define groups
         chaingroup = NeuronGroup(N=p.total_neurons, **Model(p))
         inputgroup = PulsePacket(p.initial_burst_t, p.neurons_in_input_layer, p.initial_burst_sigma)
-        tmple = chaingroup.subgroup(int(p.neurons_per_layer * 0.88))
-        tmplex = chaingroup.subgroup(int(p.neurons_per_layer * 0.12 * p.neuron_multiply))
-        tmpli = chaingroup.subgroup(int(p.neurons_per_layer * 0.12))
-        tmplix = chaingroup.subgroup(int(p.neurons_per_layer * 0.12 * p.neuron_multiply))
-        
-        layer_E = [ tmple if i<(p.num_layers-1) else tmplex for i in range(p.num_layers) ]
-        layer_I = [ tmpli if i<(p.num_layers-1) else tmplix for i in range(p.num_layers) ]
+        layer_E = [ chaingroup.subgroup(int(p.neurons_per_layer * 0.88)) for i in range(p.num_layers) ]
+        layer_I = [ chaingroup.subgroup(int(p.neurons_per_layer * 0.12)) for i in range(p.num_layers) ]
         # connections
         chainconnect = Connection(chaingroup, chaingroup, 2,delay=0*ms)
         for i in range(p.num_layers - 1):
@@ -444,9 +435,8 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     dsigma = 1. * ms
     params = default_params()
     params.num_layers = 2
-    params.neuron_multiply = neuron_multiply
+    params.neurons_per_layer = int(params.neurons_per_layer * neuron_multiply)
     params.wi = weight
-    params.total_neurons = params.neurons_per_layer * (1 + neuron_multiply)
     net = DefaultNetwork(params)
     i = 0
     
@@ -561,19 +551,19 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     title('Isoclines')
     legend()
     axis([sigmamin / ms, sigmamax / ms, 0, 100])     
-    savefig(("wi_{1}_{0}.png").format(params.wi,params.neurons_per_layer), bbox_inches='tight')
+    savefig(("wi_{0}.png").format(params.wi), bbox_inches='tight')
     close()
  
     figure()                               
     plot(pol_a(tmpa) / ms,tmpa,'b-',label = "a : y = {0} + {1}x + {2}x^2".format(z_a[0],z_a[1],z_a[2]))
     plot(pol_s(tmpa) / ms,tmpa,'r-',label = "sigma :y = {0} + {1}x + {2}x^2".format(z_s[0],z_s[1],z_s[2]))
-    mpl.rcParams['legend.fontsize'] = 7    
+    mpl.rcParams['legend.fontsize'] = 7   
     xlabel('sigma (ms)')
     ylabel('a')
     title('Isoclines')
     legend()
-    axis([sigmamin / ms, sigmamax / ms, 0, 150])    
-    savefig(("isoclines_{1}_{0}.png").format(params.wi,params.neurons_per_layer), bbox_inches='tight')
+    axis([sigmamin / ms, sigmamax / ms, 0, 200])    
+    savefig(("isoclines_{0}.png").format(params.wi), bbox_inches='tight')
     close()
      
     print "\nweight ",weight  
@@ -595,7 +585,7 @@ def fpVsInhRun():
     sn = []  #Saddle node list
     ratio = []
     for i in linspace(wi,0,1):
-        temp = fp_vs_inh(10,50,i,True)
+        temp = fp_vs_inh(10,1,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
         ratio.append(i)
