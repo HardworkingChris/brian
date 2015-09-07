@@ -3,11 +3,15 @@ from numpy import array
 from brian import *
 import time
 
-from scipy.optimize import curve_fit
-
 from brian.library.IF import *
 from brian.library.synapses import *
 
+import matplotlib as mpl
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
+import matplotlib.pyplot as plt
+
+import pickle
 def minimal_example():
     # Neuron model parameters
     Vr = -70 * mV
@@ -336,9 +340,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
     params = default_params()
     params.num_layers = 1
     params.neurons_per_layer = int(params.neurons_per_layer * neuron_multiply)
-
     net = DefaultNetwork(params)
-
     i = 0
     
     if verbose:
@@ -346,22 +348,33 @@ def isoclines(grid, neuron_multiply, verbose=True):
     start_time = time.time()
     figure()
     
-    aouta = []
-    aouts = []
-    souta = []
-    souts = []
+    lista_a = []
+    lista_s = []
+    lists_a = []
+    lists_s = []
     ovrlp = {}
-    
+    bound_a = {}
+    bound_sigma = {}
     newsigma = 0. * ms
+    
     for ai in range(grid + 1):
         ovrlp_s = []
+        bas = []
+        bsa = []
         for sigmai in range(grid + 1):
             a = int(amin + (ai * (amax - amin)) / grid)
             if a > amax: a = amax
             sigma = sigmamin + sigmai * (sigmamax - sigmamin) / grid
             params.initial_burst_a, params.initial_burst_sigma = a, sigma
             net.reinit(params)
+            #single_sfc(params)
             net.run()
+            
+            # Debug
+            #show()
+            #raster_plot(showgrouplines = True,*net.mon_E)
+            #show()
+            
             (newa, newsigma) = estimate_params(net.mon[-1], params.initial_burst_t)
             newa = float(newa) / float(neuron_multiply)
        
@@ -369,25 +382,33 @@ def isoclines(grid, neuron_multiply, verbose=True):
             plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
             plot([sigma / ms], [a], marker='.', color=[0,0,0], markersize=15)
             if (newa-a >= 0): 
-                aouta.append(a)
-                aouts.append(sigma / ms)  
-                plot([sigma / ms], [a], marker='.', color='b', markersize=15) 
-            if (newsigma*1000 - sigma / ms) < 0.01:
-                souta.append(a)
-                souts.append(sigma / ms)
-                plot([sigma / ms], [a], marker='.', color='r', markersize=15) 
-            if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
                 if a > 10:
-                    ovrlp_s.append(sigma / ms)
-                    ovrlp.update({a:ovrlp_s})
-                plot([sigma / ms], [a], marker='.', color='g', markersize=15)                        
+                    bas.append(sigma)
+                    bound_a.update({a:bas})  
+                plot([sigma / ms], [a], marker='.', color='b', markersize=15)
+            try:     
+                if (newsigma*1000 - sigma / ms) < 0.01:
+                    if a > 30:
+                        bsa.append(sigma)
+                        bound_sigma.update({a:bsa})  
+                    plot([sigma / ms], [a], marker='.', color='r', markersize=15)
+            except fundamentalunits.DimensionMismatchError:
+                 plot([sigma / ms], [a], marker='.', color='b', markersize=15)
+            try:
+                if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
+                    if a > 10:
+                        ovrlp_s.append(newsigma*1000)
+                        ovrlp.update({newa:ovrlp_s})
+                    plot([sigma / ms], [a], marker='.', color='g', markersize=15)
+            except fundamentalunits.DimensionMismatchError:
+                plot([sigma / ms], [a], marker='.', color='b', markersize=15)              
             i += 1
             if verbose:
                 print str(int(100. * float(i) / float((grid + 1) ** 2))) + "%",
         if verbose:
             print
-                    
-    #plot(aouts,aouta,'b-')
+    
+   
     #plot(souts,souta,'r-')
     if verbose:
         print "Evaluation time:", time.time() - start_time, "seconds"
@@ -402,42 +423,63 @@ def isoclines(grid, neuron_multiply, verbose=True):
             except KeyError:
                 foo = 0
     '''
-    print "stable fixed point at ",max(ovrlp.keys()),',',ovrlp[max(ovrlp.keys())][0]
-    print "Saddle node at ",min(ovrlp.keys()),',',ovrlp[min(ovrlp.keys())][-1]
-    print "\n"
     
-    # Curve fitting to left and right boundaries of the overlapping region
-    left = []
-    right = []
+    #...................
+    #uncomment these 2 lines for TeX labels
+    #import pylab
+    #pylab.rc_params.update({'text.usetex': True})
+    #...................
     
-    for k in ovrlp.keys():
-        left.append((k,min(ovrlp[k])))
-        right.append((k,max(ovrlp[k])))
+    # Pick up the boundary points
+    for i in bound_a.keys():
+        lista_a.append(i)
+        lista_s.append(max(bound_a[i]))
+    for i in bound_sigma.keys():
+        lists_a.append(i)
+        lists_s.append(min(bound_sigma[i]))
     
-    left = array(left)
-    right = array(right)
-    
-    left_params = curve_fit(left_curve_fit,left[:,1],left[:,0])
-    right_params = curve_fit(right_curve_fit,right[:,0],right[:,1])
-    
-    [u,v] = left_params[0]
-    [l,m] = right_params[0]
-    
-    print u,v,l,m
-    
-    lx = linspace(sigmamin,sigmamax,20)
-    rx = linspace(amin,amax,20)
-    
-    ly = left_curve_fit(lx,u,v)
-    ry = right_curve_fit(rx,l,m)
-    
-    plot(lx,ly,'r-')
-    plot(ry / ms,ly,'b-')
-    
+    z_a = np.polyfit(lista_a,lista_s,2)
+    pol_a = np.poly1d(z_a)
+    print "pol_a : ",z_a,"\n"
+    z_s = np.polyfit(lists_a,lists_s,2)
+    print "pol_s : ",z_s,"\n"    
+    pol_s = np.poly1d(z_s)
+    tmpa = linspace(amin,amax+100,50)
+    plot(pol_a(tmpa) / ms,tmpa,'b-',label = "a-nullcline")
+    plot(pol_s(tmpa) / ms,tmpa,'r-',label = "sigma-nullcline")
+    mpl.rcParams['legend.fontsize'] = 10
     xlabel('sigma (ms)')
     ylabel('a')
     title('Isoclines')
-    axis([sigmamin / ms, sigmamax / ms, 0, 100])       
+    legend()
+    axis([sigmamin / ms, sigmamax / ms, 0, 100])     
+    savefig("sS{0}.png", bbox_inches='tight')
+    close()
+ 
+    figure()                               
+    plot(pol_a(tmpa) / ms,tmpa,'b-',label = "a : y = {0} + {1}x + {2}x^2".format(z_a[0],z_a[1],z_a[2]))
+    plot(pol_s(tmpa) / ms,tmpa,'r-',label = "sigma :y = {0} + {1}x + {2}x^2".format(z_s[0],z_s[1],z_s[2]))
+    mpl.rcParams['legend.fontsize'] = 10    
+    xlabel('sigma (ms)')
+    ylabel('a')
+    title('Isoclines')
+    legend()
+    axis([sigmamin / ms, sigmamax / ms, 0, 150])    
+    savefig("isoclines eqn.png", bbox_inches='tight')
+    close()
+     
+    print "\nweight ",weight  
+     
+    if ovrlp.keys()!=[]:
+        print "\nstable fixed point at ",max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]
+        print "\nSaddle node at ",min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1]
+        print "\n"       
+        return array([(max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]),(min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1])])
+
+    else:
+        print "None\n"
+        return ((0,0),(0,0))
+   
 ##--------------------------------------------
 ## Uncomment below functions to generate state space
 ##--------------------------------------------
