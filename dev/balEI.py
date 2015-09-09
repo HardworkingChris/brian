@@ -94,7 +94,8 @@ default_params = Parameters(
     num_layers=10,
     neurons_per_layer=125, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
-    total_neurons = 1000
+    total_neurons = 1000,
+    neuron_multiply = 1,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
     initial_burst_a=85,
@@ -114,16 +115,20 @@ class DefaultNetwork(Network):
         # define groups
         chaingroup = NeuronGroup(N=p.total_neurons, **Model(p))
         inputgroup = PulsePacket(p.initial_burst_t, p.neurons_in_input_layer, p.initial_burst_sigma)
-        
-        unscaled_E = chaingroup.subgroup(int(p.neurons_per_layer * 0.88))
-        scaled_E = chaingroup.subgroup(int(p.neurons_per_layer * p.neuron_multiply * 0.88))
-        
-        unscaled_I = chaingroup.subgroup(int(p.neurons_per_layer * 0.12))
-        scaled_I = chaingroup.subgroup(int(p.neurons_per_layer * p.neuron_multiply * 0.12))
-        
-        layer_E = [ unscaled_E if i < (p.num_layers-1) else scaled_E for i in range(p.num_layers) ]
-        layer_I = [ unscaled_I if i < (p.num_layers-1) else scaled_I for i in range(p.num_layers) ]
-        
+        print "Total neurons = ",p.total_neurons,"\n"
+        unscaled_E = int(p.neurons_per_layer * 0.88)
+        print "nE unscaled = ",unscaled_E,"\n"
+        scaled_E = int(p.neurons_per_layer * p.neuron_multiply * 0.88)
+        print "nE scaled = ",scaled_E,"\n"
+        unscaled_I = int(p.neurons_per_layer * 0.12)
+        print "nI unscaled = ",unscaled_I,"\n"
+        scaled_I = int(p.neurons_per_layer * p.neuron_multiply * 0.12)
+        print "nI scaled = ",scaled_I,"\n"
+        layer_E = [ chaingroup.subgroup(unscaled_E) if i < (p.num_layers-1) else chaingroup.subgroup(scaled_E) for i in range(p.num_layers) ]
+        layer_I = [ chaingroup.subgroup(unscaled_I) if i < (p.num_layers-1) else chaingroup.subgroup(scaled_I) for i in range(p.num_layers) ]
+
+        print layer_E,"\n"
+        print layer_I,"\n"
         # connections
         chainconnect = Connection(chaingroup, chaingroup, 2,delay=0*ms)
         for i in range(p.num_layers - 1):
@@ -451,12 +456,12 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
         params.total_neurons = params.neurons_per_layer * (params.num_layers-1)
     else:
         params.total_neurons = params.neurons_per_layer
-        
-    params.neurons_per_layer = int(params.neurons_per_layer * params.neuron_multiply)
-    
-    if neuron_multiply > 1:
-        params.total_neurons = params.total_neurons * (1 + params.neuron_multiply)
-        
+    #print params.total_neurons,"\n"
+    if neuron_multiply == 1:
+        params.total_neurons = params.total_neurons + (params.neurons_per_layer*params.neuron_multiply)
+    else: 
+        params.total_neurons = params.total_neurons + (params.neurons_per_layer*params.neuron_multiply)
+    #print params.total_neurons,"\n"    
     net = DefaultNetwork(params)
     i = 0
     
@@ -494,7 +499,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             #show()
             
             (newa, newsigma) = estimate_params(net.mon_E[-1], params.initial_burst_t)
-            newa = float(newa) / float(neuron_multiply)
+            newa = float(newa) / float(params.neuron_multiply)
        
             #col = (float(ai) / float(grid), float(sigmai) / float(grid), 0.5)
             plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
@@ -505,7 +510,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
                     bound_a.update({a:bas})  
                 plot([sigma / ms], [a], marker='.', color='b', markersize=15)
             try:     
-                if (float(newsigma*1000) - float(sigma)) < 0.01:
+                if (float(newsigma) - float(sigma)) < 0.00001:
                     if a > 30:
                         bsa.append(sigma)
                         bound_sigma.update({a:bsa})  
@@ -513,7 +518,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             except fundamentalunits.DimensionMismatchError:
                  plot([sigma / ms], [a], marker='.', color='b', markersize=15)
             try:
-                if (newa-a >= 0) and (float(newsigma*1000) - float(sigma)) < 0.01:
+                if (newa-a >= 0) and (float(newsigma) - float(sigma)) < 0.00001:
                     if a > 10:
                         ovrlp_s.append(newsigma*1000)
                         ovrlp.update({newa:ovrlp_s})
@@ -571,7 +576,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     title('Isoclines')
     legend()
     axis([sigmamin / ms, sigmamax / ms, 0, 100])     
-    savefig(("wi_{0}.png").format(params.wi), bbox_inches='tight')
+    savefig(("wi_{0}_{1}.png").format(params.wi,params.neuron_multiply), bbox_inches='tight')
     close()
  
     figure()                               
@@ -583,7 +588,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     title('Isoclines')
     legend()
     axis([sigmamin / ms, sigmamax / ms, 0, 200])    
-    savefig(("isoclines_{0}.png").format(params.wi), bbox_inches='tight')
+    savefig(("isoclines_{0}_{1}.png").format(params.wi,params.neuron_multiply), bbox_inches='tight')
     close()
      
     print "\nweight ",weight  
@@ -604,8 +609,8 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(0,0,1):
-        temp = fp_vs_inh(10,1,i,True)
+    for i in linspace(0,10,1):
+        temp = fp_vs_inh(10,50,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
         ratio.append(i)
