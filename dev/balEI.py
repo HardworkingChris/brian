@@ -397,11 +397,11 @@ def isoclines(grid, neuron_multiply, verbose=True):
                 aouta.append(a)
                 aouts.append(sigma / ms)  
                 plot([sigma / ms], [a], marker='.', color='b', markersize=15) 
-            if (float(newsigma) - float(sigma)) < 0.00001:
+            if (float(newsigma) - float(sigma)) < 0.00001: #float type conversion to avoid mismatch error
                 souta.append(a)
                 souts.append(sigma / ms)
                 plot([sigma / ms], [a], marker='.', color='r', markersize=15) 
-            if (newa-a >= 0) and (float(newsigma) - float(sigma)) < 0.00001:
+            if (newa-a >= 0) and (float(newsigma) - float(sigma)) < 0.00001: #float type used
                 if a > 10:
                     ovrlp_s.append(sigma / ms)
                     ovrlp.update({a:ovrlp_s})
