@@ -94,14 +94,15 @@ default_params = Parameters(
     num_layers=10,
     neurons_per_layer=125, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
+    total_neurons = 1000
     # Initiating burst parameters
     initial_burst_t=50 * ms,
     initial_burst_a=85,
     initial_burst_sigma=1 * ms,
     # these values are recomputed whenever another value changes
-    computed_network_parameters="""
-    total_neurons = neurons_per_layer * num_layers
-    """,
+    #computed_network_parameters="""
+    #total_neurons = neurons_per_layer * num_layers
+    #""",
     # plus we also use the default model parameters
     ** model_params
     )
@@ -113,8 +114,16 @@ class DefaultNetwork(Network):
         # define groups
         chaingroup = NeuronGroup(N=p.total_neurons, **Model(p))
         inputgroup = PulsePacket(p.initial_burst_t, p.neurons_in_input_layer, p.initial_burst_sigma)
-        layer_E = [ chaingroup.subgroup(int(p.neurons_per_layer * 0.88)) for i in range(p.num_layers) ]
-        layer_I = [ chaingroup.subgroup(int(p.neurons_per_layer * 0.12)) for i in range(p.num_layers) ]
+        
+        unscaled_E = chaingroup.subgroup(int(p.neurons_per_layer * 0.88))
+        scaled_E = chaingroup.subgroup(int(p.neurons_per_layer * p.neuron_multiply * 0.88))
+        
+        unscaled_I = chaingroup.subgroup(int(p.neurons_per_layer * 0.12))
+        scaled_I = chaingroup.subgroup(int(p.neurons_per_layer * p.neuron_multiply * 0.12))
+        
+        layer_E = [ unscaled_E if i < (p.num_layers-1) else scaled_E for i in range(p.num_layers) ]
+        layer_I = [ unscaled_I if i < (p.num_layers-1) else scaled_I for i in range(p.num_layers) ]
+        
         # connections
         chainconnect = Connection(chaingroup, chaingroup, 2,delay=0*ms)
         for i in range(p.num_layers - 1):
@@ -435,8 +444,19 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     dsigma = 1. * ms
     params = default_params()
     params.num_layers = 2
-    params.neurons_per_layer = int(params.neurons_per_layer * neuron_multiply)
+    params.neuron_multiply = neuron_multiply
     params.wi = weight
+    
+    if params.num_layers > 1:
+        params.total_neurons = params.neurons_per_layer * (params.num_layers-1)
+    else:
+        params.total_neurons = params.neurons_per_layer
+        
+    params.neurons_per_layer = int(params.neurons_per_layer * params.neuron_multiply)
+    
+    if neuron_multiply > 1:
+        params.total_neurons = params.total_neurons * (1 + params.neuron_multiply)
+        
     net = DefaultNetwork(params)
     i = 0
     
