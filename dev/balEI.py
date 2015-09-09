@@ -397,11 +397,11 @@ def isoclines(grid, neuron_multiply, verbose=True):
                 aouta.append(a)
                 aouts.append(sigma / ms)  
                 plot([sigma / ms], [a], marker='.', color='b', markersize=15) 
-            if (newsigma*1000 - sigma / ms) < 0.01:
+            if (float(newsigma) - float(sigma)) < 0.00001:
                 souta.append(a)
                 souts.append(sigma / ms)
                 plot([sigma / ms], [a], marker='.', color='r', markersize=15) 
-            if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
+            if (newa-a >= 0) and (float(newsigma) - float(sigma)) < 0.00001:
                 if a > 10:
                     ovrlp_s.append(sigma / ms)
                     ovrlp.update({a:ovrlp_s})
@@ -485,7 +485,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
                     bound_a.update({a:bas})  
                 plot([sigma / ms], [a], marker='.', color='b', markersize=15)
             try:     
-                if (newsigma*1000 - sigma / ms) < 0.01:
+                if (float(newsigma*1000) - float(sigma)) < 0.01:
                     if a > 30:
                         bsa.append(sigma)
                         bound_sigma.update({a:bsa})  
@@ -493,7 +493,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             except fundamentalunits.DimensionMismatchError:
                  plot([sigma / ms], [a], marker='.', color='b', markersize=15)
             try:
-                if (newa-a >= 0) and (newsigma*1000 - sigma / ms) < 0.01:
+                if (newa-a >= 0) and (float(newsigma*1000) - float(sigma)) < 0.01:
                     if a > 10:
                         ovrlp_s.append(newsigma*1000)
                         ovrlp.update({newa:ovrlp_s})
@@ -584,7 +584,7 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(wi,0,1):
+    for i in linspace(0,0,1):
         temp = fp_vs_inh(10,1,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
