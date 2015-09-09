@@ -443,7 +443,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
     
 def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     amin = 0
-    amax = 100
+    amax = 150
     sigmamin = 0. * ms
     sigmamax = 4. * ms
     dsigma = 1. * ms
@@ -610,7 +610,7 @@ def fpVsInhRun():
     sn = []  #Saddle node list
     ratio = []
     for i in linspace(0,10,1):
-        temp = fp_vs_inh(10,50,i,True)
+        temp = fp_vs_inh(15,50,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
         ratio.append(i)
