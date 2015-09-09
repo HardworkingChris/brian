@@ -115,20 +115,26 @@ class DefaultNetwork(Network):
         # define groups
         chaingroup = NeuronGroup(N=p.total_neurons, **Model(p))
         inputgroup = PulsePacket(p.initial_burst_t, p.neurons_in_input_layer, p.initial_burst_sigma)
+        
         print "Total neurons = ",p.total_neurons,"\n"
+        
         unscaled_E = int(p.neurons_per_layer * 0.88)
         print "nE unscaled = ",unscaled_E,"\n"
+        
         scaled_E = int(p.neurons_per_layer * p.neuron_multiply * 0.88)
         print "nE scaled = ",scaled_E,"\n"
+        
         unscaled_I = int(p.neurons_per_layer * 0.12)
         print "nI unscaled = ",unscaled_I,"\n"
+        
         scaled_I = int(p.neurons_per_layer * p.neuron_multiply * 0.12)
         print "nI scaled = ",scaled_I,"\n"
+        
         layer_E = [ chaingroup.subgroup(unscaled_E) if i < (p.num_layers-1) else chaingroup.subgroup(scaled_E) for i in range(p.num_layers) ]
+        
         layer_I = [ chaingroup.subgroup(unscaled_I) if i < (p.num_layers-1) else chaingroup.subgroup(scaled_I) for i in range(p.num_layers) ]
 
-        print layer_E,"\n"
-        print layer_I,"\n"
+        
         # connections
         chainconnect = Connection(chaingroup, chaingroup, 2,delay=0*ms)
         for i in range(p.num_layers - 1):
