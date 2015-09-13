@@ -460,8 +460,6 @@ def propTrace(neuron_multiply, weight, verbose=True):
     net = DefaultNetwork(params)
     delay = 0.7 * ms
     lsigma = {}
-    tmps = []
-    tmpa = []
     
     avga = np.zeros(params.num_layers+1)
     avgs = np.zeros(params.num_layers+1)
@@ -470,6 +468,8 @@ def propTrace(neuron_multiply, weight, verbose=True):
     for i in datpts.keys():
         params.initial_burst_a, params.initial_burst_sigma = i, datpts[i]
         net.reinit(params)
+        avga = np.zeros(params.num_layers+1)
+        avgs = np.zeros(params.num_layers+1)
         for j in range(neuron_multiply):
             net.run()
             newa.append(i)
@@ -482,7 +482,9 @@ def propTrace(neuron_multiply, weight, verbose=True):
             newsigma = array(newsigma)
             avga = avga + newa
             avgs = avgs + newsigma
-            
+        avga = avga/neuron_multiply
+        avgs = (avgs/neuron_multiply)*1000 #seconds to msec conversion
+        plot(avgs,avga)    
                         
 def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     amin = 0
