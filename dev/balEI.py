@@ -94,7 +94,7 @@ default_params = Parameters(
     num_layers=10,
     neurons_per_layer=125, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
-    total_neurons = 1250,
+    total_neurons = 1375,
     neuron_multiply = 1,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -455,7 +455,7 @@ def propTrace(neuron_multiply, weight, verbose=True):
     dsigma = 1. * ms
     params = default_params()
     params.num_layers = 10
-    params.neuron_multiply = neuron_multiply
+    params.neuron_multiply = 1
     params.wi = weight
     net = DefaultNetwork(params)
     delay = 0.7 * ms
@@ -470,14 +470,17 @@ def propTrace(neuron_multiply, weight, verbose=True):
     for i in datpts.keys():
         params.initial_burst_a, params.initial_burst_sigma = i, datpts[i]
         net.reinit(params)
+        
         avga = np.zeros(params.num_layers+1)
         avgs = np.zeros(params.num_layers+1)
         for j in range(neuron_multiply):
             net.run()
+            newa = []
+            newsigma = []
             newa.append(i)
             newsigma.append(float(datpts[i]))
-            for i in range(params.num_layers):
-                (a_, sigma_) = estimate_params(net.mon_E[i+1], params.initial_burst_t + i*delay)
+            for k in range(params.num_layers):
+                (a_, sigma_) = estimate_params(net.mon_E[k+1], params.initial_burst_t + k*delay)
                 newa.append(a_)
                 newsigma.append(float(sigma_))
             newa = array(newa)
@@ -487,7 +490,7 @@ def propTrace(neuron_multiply, weight, verbose=True):
         avga = avga/neuron_multiply
         avgs = (avgs/neuron_multiply)*1000 #seconds to msec conversion
         plot(avgs,avga)
-     if verbose:
+    if verbose:
         print "\nend at {0}\n".format(time.time())   
                         
 def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
@@ -662,7 +665,7 @@ def fpVsInhRun():
     sn = []  #Saddle node list
     ratio = []
     for i in linspace(0,10,1):
-        temp = fp_vs_inh(5,1,i,True)
+        temp = fp_vs_inh(10,10,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
         ratio.append(i)
