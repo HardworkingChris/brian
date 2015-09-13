@@ -446,7 +446,18 @@ def isoclines(grid, neuron_multiply, verbose=True):
     print "stable fixed point at ",max(ovrlp.keys()),ovrlp[max(ovrlp.keys())][0]
     print "\nSaddle node at ",min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1]
     print "\n"
-    
+
+def propTrace(neuron_multiply, weight, verbose=True):
+    amin = 0
+    amax = 150
+    sigmamin = 0. * ms
+    sigmamax = 4. * ms
+    dsigma = 1. * ms
+    params = default_params()
+    params.num_layers = 10
+    params.neuron_multiply = neuron_multiply
+    params.wi = weight
+            
 def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     amin = 0
     amax = 150
