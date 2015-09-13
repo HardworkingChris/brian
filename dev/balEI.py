@@ -94,7 +94,7 @@ default_params = Parameters(
     num_layers=10,
     neurons_per_layer=125, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
     neurons_in_input_layer=100,
-    total_neurons = 1000,
+    total_neurons = 1250,
     neuron_multiply = 1,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -687,14 +687,14 @@ def loadPlotData():
 ##--------------------------------------------
 ## Uncomment below function to run and plot fixed point vs inhibition
 ##--------------------------------------------
-fpVsInhRun()
-loadPlotData()
-"""
+#fpVsInhRun()
+#loadPlotData()
+
 params = default_params()
-params.wi = -9.0
-params.initial_burst_a, params.initial_burst_sigma = 100, 0 * ms
+params.wi = -1.0
+params.initial_burst_a, params.initial_burst_sigma = 54, 0 * ms
 single_sfc(params)
-"""
+
 show()
 ##--------------------------------------------
 ## Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c/3c and 4d
