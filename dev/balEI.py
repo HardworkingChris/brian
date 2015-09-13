@@ -457,7 +457,13 @@ def propTrace(neuron_multiply, weight, verbose=True):
     params.num_layers = 10
     params.neuron_multiply = neuron_multiply
     params.wi = weight
-            
+    lsigma = {}
+    tmps = []
+    datpts = {46:sigmamin,54:sigmamin,100:2 * ms,98:sigmamax} 
+    for i in datpts.keys():
+        
+        for j in range(neuron_multiply):
+                    
 def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     amin = 0
     amax = 150
@@ -689,12 +695,12 @@ def loadPlotData():
 ##--------------------------------------------
 #fpVsInhRun()
 #loadPlotData()
-
+'''
 params = default_params()
 params.wi = -1.0
 params.initial_burst_a, params.initial_burst_sigma = 54, 0 * ms
 single_sfc(params)
-
+'''
 show()
 ##--------------------------------------------
 ## Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c/3c and 4d
