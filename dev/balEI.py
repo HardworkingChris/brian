@@ -464,7 +464,9 @@ def propTrace(neuron_multiply, weight, verbose=True):
     avga = np.zeros(params.num_layers+1)
     avgs = np.zeros(params.num_layers+1)
     
-    datpts = {46:sigmamin,54:sigmamin,100:2 * ms,98:sigmamax} 
+    datpts = {46:sigmamin,54:sigmamin,100:2 * ms,98:sigmamax}
+    if verbose:
+        print "\nstart at {0}".format(time.time()) 
     for i in datpts.keys():
         params.initial_burst_a, params.initial_burst_sigma = i, datpts[i]
         net.reinit(params)
@@ -484,7 +486,9 @@ def propTrace(neuron_multiply, weight, verbose=True):
             avgs = avgs + newsigma
         avga = avga/neuron_multiply
         avgs = (avgs/neuron_multiply)*1000 #seconds to msec conversion
-        plot(avgs,avga)    
+        plot(avgs,avga)
+     if verbose:
+        print "\nend at {0}\n".format(time.time())   
                         
 def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     amin = 0
@@ -598,6 +602,9 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     #pylab.rc_params.update({'text.usetex': True})
     #...................
     
+    # Plot propagation trace for few grid points)
+    propTrace(neuron_multiply, weight)
+    
     # Pick up the boundary points
     for i in bound_a.keys():
         lista_a.append(i)
@@ -655,7 +662,7 @@ def fpVsInhRun():
     sn = []  #Saddle node list
     ratio = []
     for i in linspace(0,10,1):
-        temp = fp_vs_inh(15,50,i,True)
+        temp = fp_vs_inh(5,1,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
         ratio.append(i)
@@ -715,8 +722,8 @@ def loadPlotData():
 ##--------------------------------------------
 ## Uncomment below function to run and plot fixed point vs inhibition
 ##--------------------------------------------
-#fpVsInhRun()
-#loadPlotData()
+fpVsInhRun()
+loadPlotData()
 '''
 params = default_params()
 params.wi = -1.0
