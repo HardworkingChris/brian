@@ -456,7 +456,8 @@ def propTrace(neuron_multiply, weight, verbose=True):
     params = default_params()
     params.num_layers = 10
     params.neuron_multiply = 1
-    params.wi = weight
+    #params.wi = weight
+    params.noise_inh_rate = weight
     net = DefaultNetwork(params)
     delay = 0.7 * ms
     lsigma = {}
@@ -464,9 +465,10 @@ def propTrace(neuron_multiply, weight, verbose=True):
     avga = np.zeros(params.num_layers+1)
     avgs = np.zeros(params.num_layers+1)
     
-    datpts = {46:sigmamin,54:sigmamin,100:2 * ms,98:sigmamax}
+    datpts = {40:sigmamin,60:sigmamin,100:3.0 * ms,65:sigmamax,90:sigmamax,98:sigmamin,41:sigmamax}
     if verbose:
-        print "\nstart at {0}".format(time.time()) 
+        start = time.time()
+        print "\nstart at {0} second".format(start) 
     for i in datpts.keys():
         params.initial_burst_a, params.initial_burst_sigma = i, datpts[i]
         net.reinit(params)
@@ -488,10 +490,14 @@ def propTrace(neuron_multiply, weight, verbose=True):
             avga = avga + newa
             avgs = avgs + newsigma
         avga = avga/neuron_multiply
+        print i,datpts[i],"\naverage a:",avga,"\n"
         avgs = (avgs/neuron_multiply)*1000 #seconds to msec conversion
-        plot(avgs,avga)
+        print i,datpts[i],"\naverage sigma:",avgs,"\n"
+        plot([datpts[i] / ms], [i], marker='*', color='k', markersize=18)
+        plot(avgs,avga,linestyle = '-')
     if verbose:
-        print "\nend at {0}\n".format(time.time())   
+        print "\nend at {0} second\n".format(time.time())
+        print "\nTime elapsed {0} seconds:".format(time.time() - start)  
                         
 def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     amin = 0
@@ -502,7 +508,8 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     params = default_params()
     params.num_layers = 2
     params.neuron_multiply = neuron_multiply
-    params.wi = weight
+    #params.wi = weight
+    params.noise_inh_rate = weight
     
     if params.num_layers > 1:
         params.total_neurons = params.neurons_per_layer * (params.num_layers-1)
@@ -540,7 +547,8 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             if a > amax: a = amax
             sigma = sigmamin + sigmai * (sigmamax - sigmamin) / grid
             params.initial_burst_a, params.initial_burst_sigma = a, sigma
-            params.wi = weight
+            #params.wi = weight
+            params.noise_inh_rate = weight
             net.reinit(params)
             #single_sfc(params)
             net.run()
@@ -554,7 +562,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
             newa = float(newa) / float(params.neuron_multiply)
        
             #col = (float(ai) / float(grid), float(sigmai) / float(grid), 0.5)
-            plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
+            #plot([sigma / ms, newsigma / ms], [a, newa], color=[0,0,0])
             plot([sigma / ms], [a], marker='.', color=[0,0,0], markersize=15)
             if (newa-a >= 0): 
                 if a > 10:
@@ -588,7 +596,6 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     if verbose:
         print "Evaluation time:", time.time() - start_time, "seconds"
 
-    print "\nThe points of intersection are:\n"
     '''
     foo = 1
     while(foo):
@@ -623,15 +630,15 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     print "pol_s : ",z_s,"\n"    
     pol_s = np.poly1d(z_s)
     tmpa = linspace(amin,amax+100,50)
-    plot(pol_a(tmpa) / ms,tmpa,'b-',label = "a-nullcline")
-    plot(pol_s(tmpa) / ms,tmpa,'r-',label = "sigma-nullcline")
+    plot(pol_a(tmpa) / ms,tmpa,'b-.',label = "a-nullcline")
+    plot(pol_s(tmpa) / ms,tmpa,'r-.',label = "sigma-nullcline")
     mpl.rcParams['legend.fontsize'] = 10
     xlabel('sigma (ms)')
     ylabel('a')
     title('Isoclines')
     legend()
-    axis([sigmamin / ms, sigmamax / ms, 0, 100])     
-    savefig(("wi_{0}_{1}.png").format(params.wi,params.neuron_multiply), bbox_inches='tight')
+    axis([sigmamin / ms, sigmamax / ms, amin, amax])     
+    savefig(("wi_{0}_{2}_{1}.png").format(params.wi,params.neuron_multiply,params.noise_inh_rate), bbox_inches='tight')
     close()
  
     figure()                               
@@ -643,9 +650,10 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     title('Isoclines')
     legend()
     axis([sigmamin / ms, sigmamax / ms, 0, 200])    
-    savefig(("isoclines_{0}_{1}.png").format(params.wi,params.neuron_multiply), bbox_inches='tight')
+    savefig(("isoclines_{0}_{2}_{1}.png").format(params.wi,params.neuron_multiply,params.noise_inh_rate), bbox_inches='tight')
     close()
-     
+    
+    print "\nThe points of intersection are:\n"     
     print "\nweight ",weight  
      
     if ovrlp.keys()!=[]:
@@ -660,12 +668,13 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
 
 def fpVsInhRun():
     params = default_params()
-    wi = params.wi
+    wi = params.wi #changes intragroup inhibition
+    noise_inh_rate = params.noise_inh_rate
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(0,10,1):
-        temp = fp_vs_inh(10,10,i,True)
+    for i in linspace(2,20,15):
+        temp = fp_vs_inh(15,50,i * Hz,True)
         sfp.append(temp[0])
         sn.append(temp[1])
         ratio.append(i)
@@ -727,6 +736,7 @@ def loadPlotData():
 ##--------------------------------------------
 fpVsInhRun()
 loadPlotData()
+#propTrace(100,-90)
 '''
 params = default_params()
 params.wi = -1.0
