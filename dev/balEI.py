@@ -148,10 +148,10 @@ class DefaultNetwork(Network):
         '''    
         # connect_random is same as connect_full with p.pr 1
         for i in range(p.num_layers - 1):
-            chainconnect.connect_random(layer_E[i], layer_E[i + 1], sparseness = p.pr, p.psp_peak * p.we)
-            chainconnect.connect_random(layer_E[i], layer_I[i + 1], sparseness = p.pr, p.psp_peak * p.we)
-            chainconnect.connect_random(layer_I[i], layer_E[i + 1], sparseness = p.pr, p.psp_peak * p.wi)
-            chainconnect.connect_random(layer_I[i], layer_I[i + 1], sparseness = p.pr, p.psp_peak * p.wi)
+            chainconnect.connect_random(layer_E[i], layer_E[i + 1], sparseness = p.pr, weight = p.psp_peak * p.we)
+            chainconnect.connect_random(layer_E[i], layer_I[i + 1], sparseness = p.pr, weight = p.psp_peak * p.we)
+            chainconnect.connect_random(layer_I[i], layer_E[i + 1], sparseness = p.pr, weight = p.psp_peak * p.wi)
+            chainconnect.connect_random(layer_I[i], layer_I[i + 1], sparseness = p.pr, weight = p.psp_peak * p.wi)
                           
         inputconnect_E = Connection(inputgroup, layer_E[0], 2)
         inputconnect_E.connect_full(weight = p.psp_peak * p.we)
@@ -468,8 +468,9 @@ def propTrace(neuron_multiply, weight, verbose=True):
     params.neuron_multiply = 1
     #params.wi = weight
     #params.noise_inh_rate = weight
-    params.noise_inh = weight
-    params.noise_exc = 1-weight
+    #params.noise_inh = weight
+    #params.noise_exc = 1-weight
+    params.pr = weight
     net = DefaultNetwork(params)
     delay = 0.7 * ms
     lsigma = {}
@@ -525,8 +526,9 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     params.neuron_multiply = neuron_multiply
     #params.wi = weight
     #params.noise_inh_rate = weight
-    params.noise_inh = weight
-    params.noise_exc = 1-weight
+    #params.noise_inh = weight
+    #params.noise_exc = 1-weight
+    params.pr = weight
     
     if params.num_layers > 1:
         params.total_neurons = params.neurons_per_layer * (params.num_layers-1)
@@ -690,7 +692,7 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(0.51,0.99,15):
+    for i in linspace(0,1.0,15):
         temp = fp_vs_inh(15,50,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
