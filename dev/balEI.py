@@ -100,6 +100,8 @@ default_params = Parameters(
     initial_burst_t=50 * ms,
     initial_burst_a=85,
     initial_burst_sigma=1 * ms,
+    # Spareness of connections
+    pr = 1,
     # these values are recomputed whenever another value changes
     #computed_network_parameters="""
     #total_neurons = neurons_per_layer * num_layers
@@ -137,12 +139,20 @@ class DefaultNetwork(Network):
         
         # connections
         chainconnect = Connection(chaingroup, chaingroup, 2,delay=0*ms)
+        '''
         for i in range(p.num_layers - 1):
             chainconnect.connect_full(layer_E[i], layer_E[i + 1], p.psp_peak * p.we)
             chainconnect.connect_full(layer_E[i], layer_I[i + 1], p.psp_peak * p.we)
             chainconnect.connect_full(layer_I[i], layer_E[i + 1], p.psp_peak * p.wi)
             chainconnect.connect_full(layer_I[i], layer_I[i + 1], p.psp_peak * p.wi)    
-                
+        '''    
+        # connect_random is same as connect_full with p.pr 1
+        for i in range(p.num_layers - 1):
+            chainconnect.connect_random(layer_E[i], layer_E[i + 1], sparseness = p.pr, p.psp_peak * p.we)
+            chainconnect.connect_random(layer_E[i], layer_I[i + 1], sparseness = p.pr, p.psp_peak * p.we)
+            chainconnect.connect_random(layer_I[i], layer_E[i + 1], sparseness = p.pr, p.psp_peak * p.wi)
+            chainconnect.connect_random(layer_I[i], layer_I[i + 1], sparseness = p.pr, p.psp_peak * p.wi)
+                          
         inputconnect_E = Connection(inputgroup, layer_E[0], 2)
         inputconnect_E.connect_full(weight = p.psp_peak * p.we)
         inputconnect_I = Connection(inputgroup, layer_I[0], 2)
@@ -680,7 +690,7 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(0,0.5,15):
+    for i in linspace(0.51,0.99,15):
         temp = fp_vs_inh(15,50,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
