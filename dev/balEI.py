@@ -541,6 +541,11 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
         params.total_neurons = params.total_neurons + (params.neurons_per_layer*params.neuron_multiply)
     #print params.total_neurons,"\n"    
     net = DefaultNetwork(params)
+    
+    #Single_sfc (without 5 ms delay)
+    single_sfc(params)
+    
+    #Verbose
     i = 0
     
     if verbose:
