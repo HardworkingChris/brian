@@ -472,7 +472,7 @@ def propTrace(neuron_multiply, weight, taum, verbose=True):
     #params.noise_inh = weight
     #params.noise_exc = 1-weight
     params.pr = weight
-    params.taum = taum * ms
+    params.taum = taum
     
     net = DefaultNetwork(params)
     delay = 0.7 * ms
@@ -547,7 +547,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, taum, verbose=True):
     net = DefaultNetwork(params)
     
     #Single_sfc (without 5 ms delay)
-    single_sfc(params)
+    #single_sfc(params)
     
     #Verbose
     i = 0
@@ -666,7 +666,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, taum, verbose=True):
     title('Isoclines')
     legend()
     axis([sigmamin / ms, sigmamax / ms, amin, amax])     
-    savefig(("wi_{0}_{2}_{1}.png").format(params.wi,params.neuron_multiply,weight), bbox_inches='tight')
+    savefig(("wi_{0}_{2}_{1}_{3}.png").format(params.wi,params.neuron_multiply,weight,taum), bbox_inches='tight')
     close()
  
     figure()                               
@@ -678,7 +678,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, taum, verbose=True):
     title('Isoclines')
     legend()
     axis([sigmamin / ms, sigmamax / ms, 0, 200])    
-    savefig(("isoclines_{0}_{2}_{1}.png").format(params.wi,params.neuron_multiply,weight), bbox_inches='tight')
+    savefig(("isoclines_{0}_{2}_{1}_{3}.png").format(params.wi,params.neuron_multiply,weight,taum), bbox_inches='tight')
     close()
     
     print "\nThe points of intersection are:\n"     
@@ -702,7 +702,7 @@ def fpVsInhRun():
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(5,15,10):
+    for i in linspace(10,20,10):
         temp = fp_vs_inh(15,50,1,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
