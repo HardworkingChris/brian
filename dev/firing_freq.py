@@ -59,7 +59,6 @@ model_params = Parameters(
     dt=0.1 * ms,
     duration=90 * ms,
     # Neuron model parameters
-    taum=10 * ms,
     taupsp=0.325 * ms,
     Vt= -55 * mV,
     Vr= -70 * mV,
@@ -102,6 +101,8 @@ default_params = Parameters(
     initial_burst_sigma=1 * ms,
     # Spareness of connections
     pr = 1,
+    # Membrane time constant
+    taum=10 * ms,
     # these values are recomputed whenever another value changes
     #computed_network_parameters="""
     #total_neurons = neurons_per_layer * num_layers
@@ -457,7 +458,7 @@ def isoclines(grid, neuron_multiply, verbose=True):
     print "\nSaddle node at ",min(ovrlp.keys()),ovrlp[min(ovrlp.keys())][-1]
     print "\n"
 
-def propTrace(neuron_multiply, weight, verbose=True):
+def propTrace(neuron_multiply, weight, taum, verbose=True):
     amin = 0
     amax = 150
     sigmamin = 0. * ms
@@ -640,7 +641,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, taum, verbose=True):
     #...................
     
     # Plot propagation trace for few grid points)
-    propTrace(neuron_multiply, weight)
+    propTrace(neuron_multiply, weight, params.taum)
     
     # Pick up the boundary points
     for i in bound_a.keys():
