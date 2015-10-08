@@ -471,6 +471,8 @@ def propTrace(neuron_multiply, weight, verbose=True):
     #params.noise_inh = weight
     #params.noise_exc = 1-weight
     params.pr = weight
+    params.taum = taum * ms
+    
     net = DefaultNetwork(params)
     delay = 0.7 * ms
     lsigma = {}
@@ -512,7 +514,7 @@ def propTrace(neuron_multiply, weight, verbose=True):
         print "\nend at {0} second\n".format(time.time())
         print "\nTime elapsed {0} seconds:".format(time.time() - start)  
                         
-def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
+def fp_vs_inh(grid, neuron_multiply, weight, taum, verbose=True):
     print "\n---------------------\n"
     print "Running simulation...\n"
     
@@ -529,6 +531,7 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
     #params.noise_inh = weight
     #params.noise_exc = 1-weight
     params.pr = weight
+    params.taum = taum * ms
     
     if params.num_layers > 1:
         params.total_neurons = params.neurons_per_layer * (params.num_layers-1)
@@ -693,12 +696,13 @@ def fp_vs_inh(grid, neuron_multiply, weight, verbose=True):
 def fpVsInhRun():
     params = default_params()
     wi = params.wi #changes intragroup inhibition
+    taum = params.taum
     noise_inh_rate = params.noise_inh_rate
     sfp = [] #Stable fixed point list
     sn = []  #Saddle node list
     ratio = []
-    for i in linspace(0.7,1.0,10):
-        temp = fp_vs_inh(30,50,i,True)
+    for i in linspace(5,15,10):
+        temp = fp_vs_inh(15,50,1,i,True)
         sfp.append(temp[0])
         sn.append(temp[1])
         ratio.append(i)
