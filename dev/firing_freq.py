@@ -21,7 +21,7 @@ def minimal_example():
     weight = 4.86 * mV
     # Neuron model
     equations = Equations('''
-        dV/dt = (-(V-Vr)+x)*(1./taum)                            : volt
+        dV/dt = (-(V-Vr)+x)*(1./taum)                        : volt
         dx/dt = (-x+y)*(1./taupsp)                               : volt
         dy/dt = -y*(1./taupsp)+25.27*mV/ms+(39.24*mV/ms**0.5)*xi : volt
         ''')
@@ -82,7 +82,7 @@ model_params = Parameters(
 # Excitatory PSPs only
 def Model(p):
     equations = Equations('''
-        dV/dt = (-(V-p.Vr)+x)*(1./p.taum)                          : volt
+        dVe/dt = (-(Ve-p.Vr)+x)*(1./p.taum)                        : volt
         dx/dt = (-x+y)*(1./p.taupsp)                               : volt
         dy/dt = -y*(1./p.taupsp)+25.27*mV/ms+(39.24*mV/ms**0.5)*xi : volt
         ''')
@@ -91,9 +91,11 @@ def Model(p):
 default_params = Parameters(
     # Network parameters
     num_layers=10,
-    neurons_per_layer=125, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer_e=110, #change this to obtain figure 4(a:80,b:90,c:100,d:110)
+    neurons_per_layer_i=15,
     neurons_in_input_layer=100,
-    total_neurons = 1375,
+    total_neurons_e = 1100,
+    total_neurons_i = 150,
     neuron_multiply = 1,
     # Initiating burst parameters
     initial_burst_t=50 * ms,
@@ -114,32 +116,38 @@ default_params = Parameters(
 # DEFAULT NETWORK STRUCTURE
 # Single input layer, multiple chained layers
 class DefaultNetwork(Network):
-    def __init__(self, p):
+    def __init__(self, pe, pi):
         # define groups
-        chaingroup = NeuronGroup(N=p.total_neurons, **Model(p))
-        inputgroup = PulsePacket(p.initial_burst_t, p.neurons_in_input_layer, p.initial_burst_sigma)
+        chaingroup_e = NeuronGroup(N=pe.total_neurons, **Model(pe))
+        chaingroup_i = NeuronGroup(N=pi.total_neurons, **Model(pi)) 
         
-        print "Total neurons = ",p.total_neurons,"\n"
+        inputgroup = PulsePacket(pe.initial_burst_t, pe.neurons_in_input_layer, pe.initial_burst_sigma)
+
+        print "Total neurons excitatory= ",pe.total_neurons,"\n"
+        print "Total neurons inhibitory= ",pi.total_neurons,"\n"
         
-        unscaled_E = int(p.neurons_per_layer * 0.88)
+        unscaled_E = int(pe.neurons_per_layer)
         print "nE unscaled = ",unscaled_E,"\n"
         
-        scaled_E = int(p.neurons_per_layer * p.neuron_multiply * 0.88)
+        scaled_E = int(pe.neurons_per_layer_e * pe.neuron_multiply)
         print "nE scaled = ",scaled_E,"\n"
         
-        unscaled_I = int(p.neurons_per_layer * 0.12)
+        unscaled_I = int(pi.neurons_per_layer)
         print "nI unscaled = ",unscaled_I,"\n"
         
-        scaled_I = int(p.neurons_per_layer * p.neuron_multiply * 0.12)
+        scaled_I = int(pi.neurons_per_layer_i * pe.neuron_multiply)
         print "nI scaled = ",scaled_I,"\n"
         
-        layer_E = [ chaingroup.subgroup(unscaled_E) if i < (p.num_layers-1) else chaingroup.subgroup(scaled_E) for i in range(p.num_layers) ]
+        layer_E = [ chaingroup_e.subgroup(unscaled_E) if i < (pe.num_layers-1) else chaingroup_e.subgroup(scaled_E) for i in range(pe.num_layers) ]
         
-        layer_I = [ chaingroup.subgroup(unscaled_I) if i < (p.num_layers-1) else chaingroup.subgroup(scaled_I) for i in range(p.num_layers) ]
+        layer_I = [ chaingroup_i.subgroup(unscaled_I) if i < (pi.num_layers-1) else chaingroup_i.subgroup(scaled_I) for i in range(pi.num_layers) ]
 
         
         # connections
-        chainconnect = Connection(chaingroup, chaingroup, 2,delay=0*ms)
+        chainconnect_ee = Connection(chaingroup_e, chaingroup_e, 2,delay=0*ms)
+        chainconnect_ei = Connection(chaingroup_e, chaingroup_i, 2,delay=0*ms)
+        chainconnect_ii = Connection(chaingroup_i, chaingroup_i, 2,delay=0*ms)
+        chainconnect_ie = Connection(chaingroup_i, chaingroup_e, 2,delay=0*ms)
         '''
         for i in range(p.num_layers - 1):
             chainconnect.connect_full(layer_E[i], layer_E[i + 1], p.psp_peak * p.we)
@@ -148,16 +156,16 @@ class DefaultNetwork(Network):
             chainconnect.connect_full(layer_I[i], layer_I[i + 1], p.psp_peak * p.wi)    
         '''    
         # connect_random is same as connect_full with p.pr 1
-        for i in range(p.num_layers - 1):
-            chainconnect.connect_random(layer_E[i], layer_E[i + 1], sparseness = p.pr, weight = p.psp_peak * p.we)
-            chainconnect.connect_random(layer_E[i], layer_I[i + 1], sparseness = p.pr, weight = p.psp_peak * p.we)
-            chainconnect.connect_random(layer_I[i], layer_E[i + 1], sparseness = p.pr, weight = p.psp_peak * p.wi)
-            chainconnect.connect_random(layer_I[i], layer_I[i + 1], sparseness = p.pr, weight = p.psp_peak * p.wi)
+        for i in range(pe.num_layers - 1):
+            chainconnect_ee.connect_random(layer_E[i], layer_E[i + 1], sparseness = pe.pr, weight = p.psp_peak * pe.we)
+            chainconnect_ei.connect_random(layer_E[i], layer_I[i + 1], sparseness = pe.pr, weight = p.psp_peak * pe.we)
+            chainconnect_ie.connect_random(layer_I[i], layer_E[i + 1], sparseness = pi.pr, weight = p.psp_peak * pi.wi)
+            chainconnect_ii.connect_random(layer_I[i], layer_I[i + 1], sparseness = pi.pr, weight = p.psp_peak * pi.wi)
                           
         inputconnect_E = Connection(inputgroup, layer_E[0], 2)
-        inputconnect_E.connect_full(weight = p.psp_peak * p.we)
+        inputconnect_E.connect_full(weight = pe.psp_peak * pe.we)
         inputconnect_I = Connection(inputgroup, layer_I[0], 2)
-        inputconnect_I.connect_full(weight = p.psp_peak * p.we)
+        inputconnect_I.connect_full(weight = pe.psp_peak * pe.we)
         
         # monitors
         chainmon_E = [SpikeMonitor(g, True) for g in layer_E]
@@ -166,28 +174,32 @@ class DefaultNetwork(Network):
         mon_E = [inputmon] + chainmon_E
         mon_I = [inputmon] + chainmon_I
         # network
-        Network.__init__(self, chaingroup, inputgroup, chainconnect, inputconnect_E, inputconnect_I, mon_E, mon_I)
+        Network.__init__(self, chaingroup_e, chaingroup_i, inputgroup, chainconnect_ee, chainconnect_ei, chainconnect_ii, chainconnect_ie, inputconnect_E, inputconnect_I, mon_E, mon_I)
         # add additional attributes to self
         self.mon_E = mon_E
         self.mon_I = mon_I
-        self.inputgroup = inputgroup
-        self.chaingroup = chaingroup
+        self.chaingroup_e = chaingroup_e
+        self.chaingroup_i = chaingroup_i
         self.layer_E = layer_E
         self.layer_I = layer_I
-        self.params = p
+        self.pe = pe
+        self.pi = pi
 
     def prepare(self):
         Network.prepare(self)
         self.reinit()
 
-    def reinit(self, p=None):
+    def reinit(self, pe=None, pi=None):
         Network.reinit(self)
         #print("params after reinit",self.params)
-        q = self.params
-        if p is None: p = q
+        qe = self.pe
+        qi = self.pi
+        if pe is None: pe = qe
+        if pi is None: pi = qi
         #print("p.wi",p.wi)
-        self.inputgroup.generate(p.initial_burst_t, p.initial_burst_a, p.initial_burst_sigma)
-        self.chaingroup.V = p.Vr + rand(len(self.chaingroup)) * (p.Vt - p.Vr)
+        self.inputgroup.generate(pe.initial_burst_t, pe.initial_burst_a, pe.initial_burst_sigma)
+        self.chaingroup_e.V = pe.Vr + rand(len(self.chaingroup)) * (pe.Vt - pe.Vr)
+        self.chaingroup_i.V = pi.Vr + rand(len(self.chaingroup)) * (pi.Vt - pi.Vr)
         self.params = p
 
     def run(self):
@@ -221,13 +233,13 @@ def estimate_params(mon, time_est):
         return (0, 0 * ms)
     return (len(times), times.std())
 
-def single_sfc(params = None):
-    if params == None:
-        net = DefaultNetwork(default_params)
+def single_sfc(params_e = None, params_i = None):
+    if params_e == None and params_i == None:
+        net = DefaultNetwork(default_params,default_params)
     else:
-        net = DefaultNetwork(params)
+        net = DefaultNetwork(params_e, params_i)
     #params.wi = -700    
-    net.reinit(params)    
+    net.reinit(params_e,params_i)    
     net.run()
     net.plot()
     show()
@@ -763,15 +775,14 @@ def loadPlotData():
 ##--------------------------------------------
 ## Uncomment below function to run and plot fixed point vs inhibition
 ##--------------------------------------------
-fpVsInhRun()
-loadPlotData()
+#fpVsInhRun()
+#loadPlotData()
 #propTrace(100,-90)
-'''
+
 params = default_params()
-params.wi = -1.0
 params.initial_burst_a, params.initial_burst_sigma = 54, 0 * ms
 single_sfc(params)
-'''
+
 show()
 ##--------------------------------------------
 ## Uncomment below functions to generate figures 2c,2d,3a,4a,4b,4c/3c and 4d
